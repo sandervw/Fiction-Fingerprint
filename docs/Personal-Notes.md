@@ -1,0 +1,24 @@
+# LEarning Notes
+
+*Claude, never touch this file unless I say to.*
+
+## Setup
+
+run `uv init --python 3.12 --no-workspace 2>&1`
+- uv init = build new python proj w. Rust and python 3.12, in standalone workspace
+- pyproject.toml is the package.json equivalent
+
+run `uv add dbt-core dbt-duckdb 2>&1`
+- records/installs the dependencies of dbt-core/duckdb in a virtual env and pins versions in uv.lock (like package-lock.json)
+
+run `uv run dbt --version` (verify dbt runs in venv)
+
+run `uv run dbt init prose_fingerprint`
+- scaffolds the project (produced a standard dbt skeleton)
+```
+prose_fingerprint/
+├── dbt_project.yml      # project config (name, paths, model defaults)
+├── models/example/      # two throwaway sample models we'll delete
+├── seeds/  macros/  tests/  snapshots/  analyses/   # empty dirs
+└── .gitignore           # ignores target/, dbt_packages/, logs/
+```

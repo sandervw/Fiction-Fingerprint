@@ -13,6 +13,7 @@ A learning project for **dbt Core + DuckDB**. The domain (stylometric "fingerpri
 ## How we work
 
 - The user is here to learn; **you write most of the code**, but you are also **the documentation**. Before writing anything, explain what we're about to do and why, step by step, so the user never has to leave the editor to understand it.
+- **One step at a time.** Do exactly ONE discrete action (one command or one file), then STOP and wait for the user. Never chain steps or implement a whole phase ahead, even when the plan lists several bullets together.
 - At any **design or tech choice, stop and lay out the options, then consult the user.** Don't pick silently.
 - **Never rely on memory for code/tech specs.** Check the local refs in `docs/reference/` first (`dbt-core.md`, `dbt-duckdb.md`, `duckdb.md`). If they don't cover it, fetch current docs (Context7 / official sources), then update the ref file. Keep these refs current.
 - **Be lean.** Fewest words possible in chat and in prose docs. No extended justification, no restating known facts, no exhaustive examples.

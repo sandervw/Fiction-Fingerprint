@@ -1,0 +1,10 @@
+[project]
+name = "fiction-fingerprint"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "dbt-core>=1.11.11",
+    "dbt-duckdb>=1.10.1",
+]

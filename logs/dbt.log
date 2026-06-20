@@ -1,0 +1,28 @@
+[0m17:47:01.590367 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000014116A84440>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000014116A84410>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000014116A1A870>]}
+
+
+============================== 17:47:01.662367 | 8f4a3878-05b5-46a0-8161-4b080512f0c2 ==============================
+[0m17:47:01.662367 [info ] [MainThread]: Running with dbt=1.11.11
+[0m17:47:01.663367 [debug] [MainThread]: running dbt with arguments {'version_check': 'True', 'no_print': 'None', 'static_parser': 'True', 'target_path': 'None', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'printer_width': '80', 'write_json': 'True', 'introspect': 'True', 'log_cache_events': 'False', 'empty': 'None', 'cache_selected_only': 'False', 'log_format': 'default', 'debug': 'False', 'fail_fast': 'False', 'partial_parse': 'True', 'send_anonymous_usage_stats': 'True', 'quiet': 'False', 'warn_error': 'None', 'profiles_dir': 'C:\\Users\\Sander\\.dbt', 'use_colors': 'True', 'invocation_command': 'dbt init prose_fingerprint --skip-profile-setup', 'indirect_selection': 'eager', 'use_experimental_parser': 'False', 'log_path': 'logs'}
+[0m17:47:01.748366 [info ] [MainThread]: Creating dbt configuration folder at C:\Users\Sander\.dbt
+[0m17:47:01.750369 [debug] [MainThread]: Starter project path: C:\Users\Sander\OneDrive\Documents\Github\Fiction-Fingerprint\.venv\Lib\site-packages\dbt\include\starter_project
+[0m17:47:01.765366 [info ] [MainThread]: 
+Your new dbt project "prose_fingerprint" was created!
+
+For more information on how to configure the profiles.yml file,
+please consult the dbt documentation here:
+
+  https://docs.getdbt.com/docs/configure-your-profile
+
+One more thing:
+
+Need help? Don't hesitate to reach out to us via GitHub issues or on Slack:
+
+  https://community.getdbt.com/
+
+Happy modeling!
+
+[0m17:47:01.766367 [debug] [MainThread]: Command `dbt init` succeeded at 17:47:01.766367 after 0.28 seconds
+[0m17:47:01.766367 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000141166A7320>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001411641E1B0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000014114511A00>]}
+[0m17:47:01.766367 [debug] [MainThread]: Flushing usage events
+[0m17:47:02.119369 [debug] [MainThread]: An error was encountered while trying to flush usage events
