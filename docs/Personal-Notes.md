@@ -25,3 +25,8 @@ prose_fingerprint/
 
 create profiles.yml in project root
 - tells dbt which db to build for / target
+
+## Viewing the data
+
+`duckdb -ui prose_fingerprint/warehouse.duckdb`      # browser UI (object tree + grid)
+`duckdb prose_fingerprint/warehouse.duckdb `         # SQL shell: .tables, SELECT ... LIMIT 10

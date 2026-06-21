@@ -7,6 +7,7 @@ requires-python = ">=3.12"
 dependencies = [
     "dbt-core>=1.11.11",
     "dbt-duckdb>=1.10.1",
+    "duckdb>=1.5.4",
     "en-core-web-sm",
     "spacy>=3.8.14",
 ]

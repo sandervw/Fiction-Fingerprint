@@ -101,3 +101,22 @@ No built-in "simple/compound/complex" label; derive it from dependency labels wi
 - **Simple:** one clause, neither of the above.
 
 Treat this as a best-effort classifier; document the rule in the extractor.
+
+---
+
+## Processing long texts (chunking)
+
+Source: spacy.io (via Context7), fetched 2026-06-21. The parser/NER need ~1GB temp memory per 100k characters, and `nlp()` enforces `nlp.max_length` (default 1,000,000 chars). Long works (Seneca ~1.2M chars, the Peake novels) must be split before full parsing.
+
+Pattern: clean text, split into sub-100k-char chunks on paragraph (blank-line) boundaries so no sentence is cut, parse the chunks with `nlp.pipe`, reassemble with `Doc.from_docs`, then run metrics on the single work-level Doc.
+
+```python
+from spacy.tokens import Doc
+
+docs = list(nlp.pipe(chunks, batch_size=8))  # streams; preserves DEP/sents per chunk
+work_doc = Doc.from_docs(docs)               # merges; preserves sentence + entity info
+```
+
+- `nlp.pipe(texts)` yields Docs in order, batches for speed, and supports `disable=[...]` to skip components you do not need.
+- `Doc.from_docs(docs)` needs all docs to share one `Vocab` (true when one `nlp` made them); merged text is the chunks joined with whitespace.
+- Split on paragraph boundaries so a sentence never spans a chunk edge; `from_docs` then yields a faithful full-work parse. Small works stay a single chunk (no-op).

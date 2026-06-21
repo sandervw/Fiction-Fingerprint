@@ -489,6 +489,7 @@ source = { virtual = "." }
 dependencies = [
     { name = "dbt-core" },
     { name = "dbt-duckdb" },
+    { name = "duckdb" },
     { name = "en-core-web-sm" },
     { name = "spacy" },
 ]
@@ -497,6 +498,7 @@ dependencies = [
 requires-dist = [
     { name = "dbt-core", specifier = ">=1.11.11" },
     { name = "dbt-duckdb", specifier = ">=1.10.1" },
+    { name = "duckdb", specifier = ">=1.5.4" },
     { name = "en-core-web-sm", url = "https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl" },
     { name = "spacy", specifier = ">=3.8.14" },
 ]
