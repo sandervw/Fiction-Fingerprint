@@ -1,0 +1,52 @@
+work_id,title,author,tradition,era,is_self,path
+25000-sugar-lumps,"25,000 Sugar Lumps",Sander VanWilligen,speculative fiction,contemporary,true,"corpus/my-stories/25,000-Sugar-Lumps.md"
+abe-no-seimei,Abe no Seimei,Sander VanWilligen,speculative fiction,contemporary,true,corpus/my-stories/Abe-no-Seimei.md
+amidst-the-mist-and-dew,Amidst the Mist and Dew,Sander VanWilligen,speculative fiction,contemporary,true,corpus/my-stories/Amidst-the-Mist-and-Dew.md
+barndance,Barndance,Sander VanWilligen,speculative fiction,contemporary,true,corpus/my-stories/Barndance.md
+beyond-the-flue,Beyond the Flue,Sander VanWilligen,speculative fiction,contemporary,true,corpus/my-stories/Beyond-the-Flue.md
+deadmans-pile,Deadman's Pile,Sander VanWilligen,speculative fiction,contemporary,true,corpus/my-stories/Deadmans-Pile.md
+dreamreel,Dreamreel,Sander VanWilligen,speculative fiction,contemporary,true,corpus/my-stories/Dreamreel.md
+epicurus-the-mouse,Epicurus the Mouse,Sander VanWilligen,speculative fiction,contemporary,true,corpus/my-stories/Epicurus-the-Mouse.md
+fill-the-dark-with-silence,Fill the Dark with Silence,Sander VanWilligen,speculative fiction,contemporary,true,corpus/my-stories/Fill-the-Dark-with-Silence.md
+fish-on-the-rotisserie,Fish on the Rotisserie,Sander VanWilligen,speculative fiction,contemporary,true,corpus/my-stories/Fish-on-the-Rotisserie.md
+footsteps-in-red,Footsteps in Red,Sander VanWilligen,speculative fiction,contemporary,true,corpus/my-stories/Footsteps-in-Red
+lake-of-the-lost,Lake of the Lost,Sander VanWilligen,speculative fiction,contemporary,true,corpus/my-stories/Lake-of-the-Lost.md
+lumpy-bumpy,Lumpy Bumpy,Sander VanWilligen,speculative fiction,contemporary,true,corpus/my-stories/Lumpy-Bumpy.md
+message-from-a-chosen-one,Message from a Chosen One,Sander VanWilligen,speculative fiction,contemporary,true,corpus/my-stories/Message-from-a-Chosen-One.md
+murphy-ginger-and-the-magic-cupboard,Murphy Ginger and the Magic Cupboard,Sander VanWilligen,speculative fiction,contemporary,true,corpus/my-stories/Murphy-Ginger-and-the-Magic-Cupboard.md
+nicholas-sing,Nicholas Sing,Sander VanWilligen,speculative fiction,contemporary,true,corpus/my-stories/Nicholas-Sing.md
+nuclear-elves,Nuclear Elves,Sander VanWilligen,speculative fiction,contemporary,true,corpus/my-stories/Nuclear-Elves.md
+orientation-day,Orientation Day,Sander VanWilligen,speculative fiction,contemporary,true,corpus/my-stories/Orientation-Day.md
+queen-of-the-hill,Queen of the Hill,Sander VanWilligen,speculative fiction,contemporary,true,corpus/my-stories/Queen-of-the-Hill.md
+roundworm-woods,Roundworm Woods,Sander VanWilligen,speculative fiction,contemporary,true,corpus/my-stories/Roundworm-Woods.md
+the-glass-sky,The Glass Sky,Sander VanWilligen,speculative fiction,contemporary,true,corpus/my-stories/The-Glass-Sky
+the-sun-wound,The Sun Wound,Sander VanWilligen,speculative fiction,contemporary,true,corpus/my-stories/The-Sun-Wound.md
+the-taxidermist,The Taxidermist,Sander VanWilligen,speculative fiction,contemporary,true,corpus/my-stories/The-Taxidermist.md
+the-thankful-skull,The Thankful Skull,Sander VanWilligen,speculative fiction,contemporary,true,corpus/my-stories/The-Thankful-Skull.md
+wagner-bloodstone,Bloodstone,Karl Edward Wagner,sword & sorcery / dark fantasy,1970s-80s,false,corpus/other-authors/Wagner-Bloodstone.md
+wagner-dark-crusade,Dark Crusade,Karl Edward Wagner,sword & sorcery / dark fantasy,1970s-80s,false,corpus/other-authors/Wagner-Dark-Crusade.md
+wagner-darkness-weaves,Darkness Weaves,Karl Edward Wagner,sword & sorcery / dark fantasy,1970s-80s,false,corpus/other-authors/Wagner-Darkness-Weaves.md
+wagner-death-angels-shadow,Death Angel's Shadow,Karl Edward Wagner,sword & sorcery / dark fantasy,1970s-80s,false,corpus/other-authors/Wagner-Death-Angels-Shadow.md
+wagner-night-winds,Night Winds,Karl Edward Wagner,sword & sorcery / dark fantasy,1970s-80s,false,corpus/other-authors/Wagner-Night-Winds.md
+gormenghast,Gormenghast,Mervyn Peake,gothic fantasy,1946-1959,false,corpus/other-authors/Gormenghast.md
+titus-groan,Titus Groan,Mervyn Peake,gothic fantasy,1946-1959,false,corpus/other-authors/Titus-Groan.md
+the-worm-ouroboros,The Worm Ouroboros,E. R. Eddison,heroic high fantasy,1922,false,corpus/other-authors/The-Worm-Ouroboros.md
+cugels-saga,Cugel's Saga,Jack Vance,science fantasy (Dying Earth),1950s-80s,false,corpus/other-authors/Cugel's-Saga.md
+rhialto-the-marvellous,Rhialto the Marvellous,Jack Vance,science fantasy (Dying Earth),1950s-80s,false,corpus/other-authors/Rhialto-the-Marvellous.md
+the-dying-earth,The Dying Earth,Jack Vance,science fantasy (Dying Earth),1950s-80s,false,corpus/other-authors/The-Dying-Earth.md
+the-eyes-of-the-overworld,The Eyes of the Overworld,Jack Vance,science fantasy (Dying Earth),1950s-80s,false,corpus/other-authors/The-Eyes-of-the-Overworld.md
+necromancy-in-naat,Necromancy in Naat,Clark Ashton Smith,weird fiction,1930s,false,corpus/other-authors/Necromancy-in-Naat.md
+the-abominations-of-yondo,The Abominations of Yondo,Clark Ashton Smith,weird fiction,1930s,false,corpus/other-authors/the-abominations-of-yondo.md
+the-beast-of-averoigne,The Beast of Averoigne,Clark Ashton Smith,weird fiction,1930s,false,corpus/other-authors/The-Beast-of-Averoigne.md
+the-black-abbot-of-puthuum,The Black Abbot of Puthuum,Clark Ashton Smith,weird fiction,1930s,false,corpus/other-authors/The-Black-Abbot-of-Puthuum.md
+the-charnel-god,The Charnel God,Clark Ashton Smith,weird fiction,1930s,false,corpus/other-authors/The-Charnel-God.md
+the-colossus-of-ylourgne,The Colossus of Ylourgne,Clark Ashton Smith,weird fiction,1930s,false,corpus/other-authors/the-colossus-of-ylourgne.md
+the-enchantress-of-sylaire,The Enchantress of Sylaire,Clark Ashton Smith,weird fiction,1930s,false,corpus/other-authors/the-enchantress-of-sylaire.md
+the-tomb-spawn,The Tomb-Spawn,Clark Ashton Smith,weird fiction,1930s,false,corpus/other-authors/The-Tomb-Spawn.md
+the-dark-age,The Dark Age,Clark Ashton Smith,weird fiction,1930s,false,corpus/other-authors/the-dark-age.md
+beyond-the-black-river,Beyond the Black River,Robert E. Howard,sword & sorcery (Conan),1930s,false,corpus/other-authors/Beyond-the-Black-River.md
+gods-of-the-north,Gods of the North,Robert E. Howard,sword & sorcery (Conan),1930s,false,corpus/other-authors/Gods-of-the-North.md
+queen-of-the-black-coast,Queen of the Black Coast,Robert E. Howard,sword & sorcery (Conan),1930s,false,corpus/other-authors/Queen-of-the-Black-Coast.md
+the-odyssey,The Odyssey,Homer (trans.),classical epic,8th c. BCE,false,corpus/other-authors/The-Odyssey.md
+seneca-epistles,Moral Epistles,Seneca (trans.),Stoic philosophy,1st c. CE,false,corpus/other-authors/Seneca-Epistles-Complete.md
+the-nibelungenlied,The Nibelungenlied,Anonymous (trans.),medieval heroic epic,~1200 CE,false,corpus/other-authors/The Nibelungenlied.md
