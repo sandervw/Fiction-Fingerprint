@@ -22,3 +22,6 @@ prose_fingerprint/
 ├── seeds/  macros/  tests/  snapshots/  analyses/   # empty dirs
 └── .gitignore           # ignores target/, dbt_packages/, logs/
 ```
+
+create profiles.yml in project root
+- tells dbt which db to build for / target

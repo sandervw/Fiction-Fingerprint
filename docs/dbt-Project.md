@@ -17,7 +17,7 @@ A 3-week dbt Core project that models stylometric measurements of studied author
    NOT dbt's job        the "L"           the "T" — focus     the "exposure"
 ```
 
-- **Extractor (Python):** library and metric TBD. Emits **tidy rows**, never wide tables — one row per `(work, metric, value)`. Lands them in DuckDB.
+- **Extractor (Python):** uses **spaCy**. Emits **tidy rows**, never wide tables — one row per `(work, metric, value)`. Lands them in DuckDB.
 - **DuckDB:** zero-infra local warehouse — a single file, no server to run. Gentlest warehouse to start on (it's basically "SQLite for analytics"), and the `dbt-duckdb` adapter is first-rate.
 - **dbt Core:** the part you're here to learn. Everything below.
 - **BI:** see §6.
@@ -45,25 +45,25 @@ The primary fact is deliberately **tall and narrow** — one row per work per me
 
 ---
 
-## 3. The 15 Metrics (so you're not guessing)
+## 3. The 15 Metrics (final set)
 
-| #   | Metric                       | Category    | Notes                                   |
-| --- | ---------------------------- | ----------- | --------------------------------------- |
-| 1   | Type-token ratio             | lexical     | vocabulary richness                     |
-| 2   | Hapax legomena rate          | lexical     | one-off words / total                   |
-| 3   | Mean word length             | lexical     |                                         |
-| 4   | % archaic/rare words         | lexical     | dictionary list; CAS & Eddison spike    |
-| 5   | Latinate : Germanic ratio    | lexical     | CAS's "jeweled" register lives here     |
-| 6   | Mean sentence length         | syntactic   |                                         |
-| 7   | Sentence-length stdev        | syntactic   | burstiness — Peake runs long & variable |
-| 8   | Commas per sentence          | syntactic   | subordination proxy                     |
-| 9   | Mean parse-tree depth        | syntactic   | spaCy dependency depth                  |
-| 10  | Flesch-Kincaid grade         | readability |                                         |
-| 11  | Dialogue : narration ratio   | structural  | Vance high; Eddison low                 |
-| 12  | Mean paragraph length        | structural  |                                         |
-| 13  | Adjective density            | structural  |                                         |
-| 14  | Adverb density               | structural  |                                         |
-| 15  | Jaccard vocab overlap vs you | distinctive | drives `fact_vocab_overlap`             |
+| #   | Metric                       | Category    | Summary                                                       |
+| --- | ---------------------------- | ----------- | ------------------------------------------------------------- |
+| 1   | Mean word length             | lexical     | Average characters per word; denser diction runs longer.      |
+| 2   | Yule's K                     | lexical     | Vocabulary richness that stays stable across text length.     |
+| 3   | % archaic/rare words         | lexical     | Proportion matching an archaic/rare-word list (CAS, Eddison). |
+| 4   | Honoré's R                   | lexical     | Richness from hapax proportion; length-robust vs type-token.  |
+| 5   | Function-word frequency      | lexical     | Rates of "the, of, and"; classic hard-to-fake fingerprint.    |
+| 6   | Mean sentence length         | syntactic   | Average words per sentence; pacing proxy.                     |
+| 7   | Sentence-length stdev        | syntactic   | Variation in sentence length; rhythm "burstiness" (Peake).    |
+| 8   | Mean parse-tree depth        | syntactic   | Average grammatical nesting depth from dependency parse.      |
+| 9   | Sentence-type mix            | syntactic   | Proportion of simple, compound, and complex sentences.        |
+| 10  | Punctuation frequency        | mechanical  | Rates of all marks (semicolons, dashes, colons, commas).      |
+| 11  | Contraction rate             | mechanical  | Frequency of contractions ("don't"); deeply ingrained habit.  |
+| 12  | Dialogue : narration ratio   | structural  | Share of quoted speech versus narration (Vance high, Eddison low). |
+| 13  | Adjective density            | structural  | Adjectives as a fraction of all words; descriptive heaviness. |
+| 14  | Adverb density               | structural  | Adverbs as a fraction of all words; a "weak prose" tell.      |
+| 15  | Jaccard vocab overlap vs you | distinctive | Shared-vocabulary fraction between an author and you.         |
 
 ---
 

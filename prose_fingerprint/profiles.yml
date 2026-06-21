@@ -1,0 +1,11 @@
+prose_fingerprint:
+  target: duckdb
+  outputs:
+    duckdb:
+      type: duckdb
+      path: warehouse.duckdb     # single file, created on first run, relative to project root
+      threads: 4
+    # fabric:                    # add later for the portability swap — no model changes
+    #   type: fabric
+    #   driver: "ODBC Driver 18 for SQL Server"
+    #   server / database / auth ...
