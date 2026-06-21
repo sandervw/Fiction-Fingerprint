@@ -28,11 +28,47 @@ from spacy.language import Language
 from spacy.tokens import Doc
 
 from cleaning import clean_markdown
+from stylometrics import (
+    adjective_density,
+    adverb_density,
+    archaic_word_rate,
+    contraction_rate,
+    dialogue_narration_ratio,
+    function_word_frequency,
+    honore_r,
+    mean_parse_tree_depth,
+    mean_sentence_length,
+    mean_word_length,
+    punctuation_frequency,
+    sentence_length_stdev,
+    sentence_type_mix,
+    yules_k,
+)
 
 
 # Parse long works in chunks below this many characters. Each chunk stays well
 # under spaCy's 1M-char limit, so peak parser memory stays modest (~1GB/100k).
 MAX_CHUNK_CHARS = 100_000
+
+# Per-work metric functions currently implemented. Each takes the work Doc and
+# returns {metric_name: value}; the driver below flattens those into tidy
+# (work_id, metric, value) rows. Append new metrics here as they land.
+METRIC_FUNCTIONS = (
+    mean_word_length,          # 1
+    yules_k,                   # 2
+    archaic_word_rate,         # 3
+    honore_r,                  # 4
+    function_word_frequency,   # 5  (multi-value)
+    mean_sentence_length,      # 6
+    sentence_length_stdev,     # 7
+    mean_parse_tree_depth,     # 8
+    sentence_type_mix,         # 9  (multi-value)
+    punctuation_frequency,     # 10 (multi-value)
+    contraction_rate,          # 11
+    dialogue_narration_ratio,  # 12
+    adjective_density,         # 13
+    adverb_density,            # 14
+)
 
 
 # --- Data shapes ----------------------------------------------------------
@@ -53,6 +89,15 @@ class WorkRow:
 
     work_id: str
     word_count: int
+
+
+@dataclass(frozen=True)
+class MeasurementRow:
+    """One tidy measurement, ready to land in raw.raw_measurements."""
+
+    work_id: str
+    metric: str
+    value: float
 
 
 # --- Filesystem helpers ---------------------------------------------------
@@ -140,13 +185,34 @@ def read_manifest(manifest_path: Path) -> list[Work]:
         return [Work(work_id=row["work_id"], rel_path=row["path"]) for row in reader]
 
 
-def measure_work(nlp: Language, work: Work, repo_root: Path) -> WorkRow:
-    """Read, clean, and parse one work, then derive its raw.raw_works row."""
+def measure_metrics(work_id: str, doc: Doc) -> list[MeasurementRow]:
+    """Run every implemented metric over one work's Doc into tidy rows.
+
+    Each metric returns a {name: value} dict (one entry, or several for the
+    multi-value metrics still to come). We flatten those into one
+    MeasurementRow per (work_id, metric, value).
+    """
+    rows: list[MeasurementRow] = []
+    for metric_fn in METRIC_FUNCTIONS:
+        for metric_name, value in metric_fn(doc).items():
+            rows.append(MeasurementRow(work_id, metric_name, float(value)))
+    return rows
+
+
+def measure_work(
+    nlp: Language, work: Work, repo_root: Path
+) -> tuple[WorkRow, list[MeasurementRow]]:
+    """Read, clean, and parse one work into its raw_works row + measurements.
+
+    The text is parsed once into a single work-level Doc; both the word count
+    and every metric read off that same Doc, so the heavy parse happens once.
+    """
     source = repo_root / work.rel_path
     clean = clean_markdown(load_work_text(source))
     doc = build_work_doc(nlp, clean)
     word_count = sum(1 for token in doc if token.is_alpha)
-    return WorkRow(work_id=work.work_id, word_count=word_count)
+    work_row = WorkRow(work_id=work.work_id, word_count=word_count)
+    return work_row, measure_metrics(work.work_id, doc)
 
 
 # --- Load into DuckDB -----------------------------------------------------
@@ -169,18 +235,23 @@ def land_works(con: DuckDBPyConnection, rows: Sequence[WorkRow]) -> None:
     )
 
 
-def create_measurements_table(con: DuckDBPyConnection) -> None:
-    """Create the empty tidy table the metrics increment will populate.
+def land_measurements(con: DuckDBPyConnection, rows: Sequence[MeasurementRow]) -> None:
+    """Create (or replace) raw.raw_measurements and insert the tidy rows.
 
     Long/tidy shape - one row per (work, metric, value) - so adding a 16th
-    metric never changes the schema and it pivots cleanly for BI. Left empty
-    for now; filled once extract/stylometrics.py is implemented and wired in.
+    metric never changes the schema and it pivots cleanly for BI.
+    CREATE OR REPLACE keeps re-runs idempotent; ? params keep inserts safe.
     """
     con.execute("CREATE SCHEMA IF NOT EXISTS raw")
     con.execute(
         "CREATE OR REPLACE TABLE raw.raw_measurements ("
         " work_id VARCHAR, metric VARCHAR, value DOUBLE)"
     )
+    if rows:
+        con.executemany(
+            "INSERT INTO raw.raw_measurements VALUES (?, ?, ?)",
+            [(row.work_id, row.metric, row.value) for row in rows],
+        )
 
 
 # --- Orchestration --------------------------------------------------------
@@ -195,17 +266,26 @@ def main() -> None:
     # speeds up the full parse. Chunking keeps each parse under the size limit.
     nlp = spacy.load("en_core_web_sm", disable=["ner"])
     works = read_manifest(manifest_path)
-    rows = [measure_work(nlp, work, repo_root) for work in works]
+
+    # One parse per work yields both its work row and its measurement rows.
+    work_rows: list[WorkRow] = []
+    measurement_rows: list[MeasurementRow] = []
+    for work in works:
+        work_row, metric_rows = measure_work(nlp, work, repo_root)
+        work_rows.append(work_row)
+        measurement_rows.extend(metric_rows)
 
     # duckdb connections are context managers, so the file is closed cleanly.
     with duckdb.connect(str(db_path)) as con:
-        land_works(con, rows)
-        create_measurements_table(con)
+        land_works(con, work_rows)
+        land_measurements(con, measurement_rows)
 
-    total_words = sum(row.word_count for row in rows)
+    total_words = sum(row.word_count for row in work_rows)
+    metric_count = len(METRIC_FUNCTIONS)
     print(
-        f"Landed {len(rows)} works into raw.raw_works ({total_words:,} words); "
-        "raw.raw_measurements created empty (awaiting metric implementations)."
+        f"Landed {len(work_rows)} works into raw.raw_works ({total_words:,} words); "
+        f"{len(measurement_rows):,} rows into raw.raw_measurements "
+        f"({metric_count} metrics)."
     )
 
 
