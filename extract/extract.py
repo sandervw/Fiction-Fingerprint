@@ -18,6 +18,7 @@ from __future__ import annotations
 import csv
 import re
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from pathlib import Path
 
 import duckdb
@@ -241,11 +242,16 @@ def main() -> None:
         measurement_rows.extend(metric_rows)
         vocab_rows.extend(term_rows)
 
+    # One batch timestamp shared by all three tables. UTC, but stored naive
+    # (tzinfo stripped): DuckDB converts a tz-aware datetime to local time when
+    # it lands in a plain TIMESTAMP column, so we hand it the UTC wall-clock.
+    loaded_at = datetime.now(timezone.utc).replace(tzinfo=None)
+
     # duckdb connections are context managers, so the file is closed cleanly.
     with duckdb.connect(str(db_path)) as con:
-        land_works(con, work_rows)
-        land_measurements(con, measurement_rows)
-        land_vocab(con, vocab_rows)
+        land_works(con, work_rows, loaded_at)
+        land_measurements(con, measurement_rows, loaded_at)
+        land_vocab(con, vocab_rows, loaded_at)
 
     total_words = sum(row.word_count for row in work_rows)
     print(

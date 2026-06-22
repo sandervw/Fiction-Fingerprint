@@ -11,12 +11,18 @@ Tables, all in the `raw` schema:
   - raw_vocab         tidy (work_id, term, term_count): each work's content-word
                       lemmas + per-work frequency, feeding metric 15 (Jaccard,
                       computed dbt-side)
+
+Every table also carries a `loaded_at` batch timestamp (UTC, passed in by the
+caller so all three share the exact same value). Because the extractor does a
+full CREATE OR REPLACE each run, this is a load/batch stamp - "when this
+snapshot landed" - not a preserved per-row first-insert date.
 """
 
 from __future__ import annotations
 
 from collections.abc import Sequence
 from dataclasses import dataclass
+from datetime import datetime
 
 from duckdb import DuckDBPyConnection
 
@@ -54,7 +60,9 @@ class VocabRow:
 # --- Landing functions ----------------------------------------------------
 
 
-def land_works(con: DuckDBPyConnection, rows: Sequence[WorkRow]) -> None:
+def land_works(
+    con: DuckDBPyConnection, rows: Sequence[WorkRow], loaded_at: datetime
+) -> None:
     """Create (or replace) raw.raw_works and insert the measured rows.
 
     raw_works carries only what needs the text (word_count). Titles, authors
@@ -63,15 +71,18 @@ def land_works(con: DuckDBPyConnection, rows: Sequence[WorkRow]) -> None:
     """
     con.execute("CREATE SCHEMA IF NOT EXISTS raw")
     con.execute(
-        "CREATE OR REPLACE TABLE raw.raw_works (work_id VARCHAR, word_count BIGINT)"
+        "CREATE OR REPLACE TABLE raw.raw_works ("
+        " work_id VARCHAR, word_count BIGINT, loaded_at TIMESTAMP)"
     )
     con.executemany(
-        "INSERT INTO raw.raw_works VALUES (?, ?)",
-        [(row.work_id, row.word_count) for row in rows],
+        "INSERT INTO raw.raw_works VALUES (?, ?, ?)",
+        [(row.work_id, row.word_count, loaded_at) for row in rows],
     )
 
 
-def land_measurements(con: DuckDBPyConnection, rows: Sequence[MeasurementRow]) -> None:
+def land_measurements(
+    con: DuckDBPyConnection, rows: Sequence[MeasurementRow], loaded_at: datetime
+) -> None:
     """Create (or replace) raw.raw_measurements and insert the tidy rows.
 
     Long/tidy shape - one row per (work, metric, value) - so adding a 16th
@@ -81,16 +92,18 @@ def land_measurements(con: DuckDBPyConnection, rows: Sequence[MeasurementRow]) -
     con.execute("CREATE SCHEMA IF NOT EXISTS raw")
     con.execute(
         "CREATE OR REPLACE TABLE raw.raw_measurements ("
-        " work_id VARCHAR, metric VARCHAR, value DOUBLE)"
+        " work_id VARCHAR, metric VARCHAR, value DOUBLE, loaded_at TIMESTAMP)"
     )
     if rows:
         con.executemany(
-            "INSERT INTO raw.raw_measurements VALUES (?, ?, ?)",
-            [(row.work_id, row.metric, row.value) for row in rows],
+            "INSERT INTO raw.raw_measurements VALUES (?, ?, ?, ?)",
+            [(row.work_id, row.metric, row.value, loaded_at) for row in rows],
         )
 
 
-def land_vocab(con: DuckDBPyConnection, rows: Sequence[VocabRow]) -> None:
+def land_vocab(
+    con: DuckDBPyConnection, rows: Sequence[VocabRow], loaded_at: datetime
+) -> None:
     """Create (or replace) raw.raw_vocab and insert the tidy term rows.
 
     Long/tidy shape - one row per (work, term) - holding each work's distinct
@@ -102,10 +115,10 @@ def land_vocab(con: DuckDBPyConnection, rows: Sequence[VocabRow]) -> None:
     con.execute("CREATE SCHEMA IF NOT EXISTS raw")
     con.execute(
         "CREATE OR REPLACE TABLE raw.raw_vocab ("
-        " work_id VARCHAR, term VARCHAR, term_count BIGINT)"
+        " work_id VARCHAR, term VARCHAR, term_count BIGINT, loaded_at TIMESTAMP)"
     )
     if rows:
         con.executemany(
-            "INSERT INTO raw.raw_vocab VALUES (?, ?, ?)",
-            [(row.work_id, row.term, row.term_count) for row in rows],
+            "INSERT INTO raw.raw_vocab VALUES (?, ?, ?, ?)",
+            [(row.work_id, row.term, row.term_count, loaded_at) for row in rows],
         )

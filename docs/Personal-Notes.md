@@ -33,6 +33,16 @@ create profiles.yml in project root
 
 ## Design Decisions
 
+Raw data is extracted from /corups via the /extracts python logic
+
+Five python files:
+- `cleaning.py` - "the wash/strainer station"; cleans the raw file text
+- `extracts.py` - "the cook"; knows text and NLP; cleans, parses with spaCy; runs metrics, assembles types rows; the 'E' of ELT
+- `lexicons.py` - "the reference charts"; a list of spice rack spices; holds data, not logic
+- `loaders.py` - "the waiter"; knows the database; holds table shapes and create/insert; the 'L' of ELT
+- `stylometrics.py` - "the measuring gear"; scales, calipers; reads numbers off the dish
+- `vocab.py` - "the specific sampler/bagging appliance"; does one specific job for one metric
+
 The cleansing/quality part of transformation lives in the python extract (cleaning.py)
 - strips out markdown (keeps source files intact while cleaning up text for downstream)
 - Flattens multi-value stylometric measures into single work-metric-value rows
@@ -42,3 +52,5 @@ Keep reference tables for list-based metrics (archaic words, function words, pun
 Python creates a few 'raw' schema tables in duckdb
 - raw_measurements (one row per work_id, metric, and value)
 - raw_works (one row per work_id and wordcount)
+- raw_vocab (one row per work per word)
+  - USed to claculate vocab overlap between me and others authors (Jaccard)
