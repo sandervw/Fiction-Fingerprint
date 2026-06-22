@@ -1,0 +1,10 @@
+version: 2
+
+sources:
+  - name: raw                  # logical group → source('raw', <table>)
+    schema: raw                # the DuckDB schema the Python extractor writes to
+    description: "Tidy tables landed by the standalone Python extractor (extract/)."
+    tables:
+      - name: raw_works        # grain: one row per work
+      - name: raw_measurements # grain: one row per work × metric (tidy/long)
+      - name: raw_vocab        # grain: one row per work × content-word term
