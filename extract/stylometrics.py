@@ -4,8 +4,9 @@ Contract: each per-work metric takes a parsed spaCy Doc and returns a
 {metric_name: value} dict. A dict (not a bare float) lets one metric emit
 several values - the extractor flattens these into tidy raw.raw_measurements
 rows (work_id, metric, value), so N values become N rows. Editable word/
-punctuation tables live in lexicons.py; #15 (jaccard) is a cross-work
-placeholder. spaCy surfaces: docs/reference/spacy.md.
+punctuation tables live in lexicons.py; metric 15 (jaccard) emits a
+vocabulary, not a measurement, so it lives in vocab.py. spaCy surfaces:
+docs/reference/spacy.md.
 """
 
 from __future__ import annotations
@@ -40,8 +41,7 @@ SUBORDINATE_DEPS: frozenset[str] = frozenset(
 def _alpha_word_count(doc: Doc) -> int:
     """Count word tokens (is_alpha) - the project-wide "word", as in word_count.
 
-    The shared denominator for every density/rate below; punctuation, numbers,
-    and symbols are not words.
+    Punctuation, numbers, and symbols are not words.
     """
     return sum(1 for token in doc if token.is_alpha)
 
@@ -67,10 +67,9 @@ def mean_word_length(doc: Doc) -> dict[str, float]:
 
 
 def yules_k(doc: Doc) -> dict[str, float]:
-    """Metric 2: Yule's K = 10^4 * (S2 - N) / N^2, length-stable richness.
+    """Metric 2: Yule's K = length-stable richness.
 
-    N = total words, S2 = sum of each type's squared frequency. Repetition
-    raises K; varied vocabulary lowers it. Returns 0.0 for an empty doc.
+    Repetition raises K; varied vocabulary lowers it.
     """
     counts = _word_frequencies(doc)
     total = sum(counts.values())  # N
@@ -84,7 +83,7 @@ def yules_k(doc: Doc) -> dict[str, float]:
 def archaic_word_rate(doc: Doc) -> dict[str, float]:
     """Metric 3: share of words found in ARCHAIC_WORDS (curated, not exhaustive).
 
-    Blunt, but separates "thee/thou/hath" authors from modern prose. 0.0 if none.
+    Separates "thee/thou/hath" authors from modern prose.
     """
     words = _alpha_word_count(doc)
     if words == 0:
@@ -95,10 +94,9 @@ def archaic_word_rate(doc: Doc) -> dict[str, float]:
 
 
 def honore_r(doc: Doc) -> dict[str, float]:
-    """Metric 4: Honoré's R = 100 * ln(N) / (1 - V1/V), hapax-based richness.
+    """Metric 4: Honoré's R = hapax-based richness.
 
-    N = words, V = distinct words, V1 = hapaxes (used once); more once-only
-    words -> larger R. 0.0 for no words or the all-hapax (zero-division) case.
+    More once-only words -> larger R.
     """
     counts = _word_frequencies(doc)
     total = sum(counts.values())  # N
@@ -113,11 +111,7 @@ def honore_r(doc: Doc) -> dict[str, float]:
 
 
 def function_word_frequency(doc: Doc) -> dict[str, float]:
-    """Metric 5 (multi-value): per-word rate of each FUNCTION_WORDS entry.
-
-    Keyed funcword_<word>; absent words still emit a 0.0 row so every work
-    reports the same keys. All-zero for a doc with no words.
-    """
+    """Metric 5 (multi-value): per-word rate of each FUNCTION_WORDS entry."""
     words = _alpha_word_count(doc)
     counts = _word_frequencies(doc)
     if words == 0:
@@ -129,7 +123,7 @@ def function_word_frequency(doc: Doc) -> dict[str, float]:
 
 
 def mean_sentence_length(doc: Doc) -> dict[str, float]:
-    """Metric 6: words (is_alpha) per sentence (doc.sents). 0.0 if no sentences."""
+    """Metric 6: words (is_alpha) per sentence (doc.sents)."""
     sentence_count = sum(1 for _ in doc.sents)
     if sentence_count == 0:
         return {"mean_sentence_length": 0.0}
@@ -139,7 +133,7 @@ def mean_sentence_length(doc: Doc) -> dict[str, float]:
 def sentence_length_stdev(doc: Doc) -> dict[str, float]:
     """Metric 7: population stdev of sentence length in words - rhythm burstiness.
 
-    Low = metronome; high = bursty (Peake). 0.0 with fewer than 2 sentences.
+    Low = metronome; high = bursty (Peake).
     """
     lengths = [sum(1 for token in sent if token.is_alpha) for sent in doc.sents]
     if len(lengths) < 2:
@@ -162,7 +156,7 @@ def _token_depth(token: Token) -> int:
 def mean_parse_tree_depth(doc: Doc) -> dict[str, float]:
     """Metric 8: mean over sentences of the deepest token's distance to ROOT.
 
-    Deeper = more clause-within-clause (hypotactic) prose. 0.0 if no sentences.
+    Deeper = more clause-within-clause (hypotactic) prose.
     """
     depths = [
         max((_token_depth(token) for token in sent), default=0)
@@ -208,7 +202,7 @@ def punctuation_frequency(doc: Doc) -> dict[str, float]:
     """Metric 10 (multi-value): per-word rate of each PUNCTUATION_MARKS group.
 
     Keyed punct_<name>, each group's occurrences over total words. Per word so
-    it scales to "marks per 1000 words". All-zero for a doc with no words.
+    it scales to "marks per 1000 words".
     """
     words = _alpha_word_count(doc)
     mark_counts = Counter(token.text for token in doc if token.is_punct)
@@ -224,7 +218,7 @@ def contraction_rate(doc: Doc) -> dict[str, float]:
 
     spaCy splits a contraction into a clitic ("n't", "'ve", ...); count those
     after normalising the smart apostrophe. "'s" counts only when not possessive
-    (tag POS). 0.0 for a doc with no words.
+    (tag POS).
     """
     words = _alpha_word_count(doc)
     if words == 0:
@@ -247,7 +241,7 @@ def dialogue_narration_ratio(doc: Doc) -> dict[str, float]:
 
     Sweep tokens flipping an "inside quote" switch (left smart-quote opens,
     right closes, straight quote toggles); words while on are dialogue. Value is
-    dialogue / all words. Single quotes (apostrophes) ignored. 0.0 if no words.
+    dialogue / all words. Single quotes (apostrophes) ignored.
     """
     total = 0
     dialogue = 0
@@ -270,7 +264,7 @@ def dialogue_narration_ratio(doc: Doc) -> dict[str, float]:
 
 
 def adjective_density(doc: Doc) -> dict[str, float]:
-    """Metric 13: ADJ-tagged tokens as a fraction of all words. 0.0 if no words."""
+    """Metric 13: ADJ-tagged tokens as a fraction of all words."""
     word_count = _alpha_word_count(doc)
     if word_count == 0:
         return {"adjective_density": 0.0}
@@ -279,21 +273,9 @@ def adjective_density(doc: Doc) -> dict[str, float]:
 
 
 def adverb_density(doc: Doc) -> dict[str, float]:
-    """Metric 14: ADV-tagged tokens as a fraction of all words. 0.0 if no words."""
+    """Metric 14: ADV-tagged tokens as a fraction of all words."""
     word_count = _alpha_word_count(doc)
     if word_count == 0:
         return {"adverb_density": 0.0}
     adverbs = sum(1 for token in doc if token.pos_ == "ADV")
     return {"adverb_density": adverbs / word_count}
-
-
-# --- Distinctive (cross-work - different grain) ---------------------------
-
-
-def jaccard_vocab_overlap(tokens_a: set[str], tokens_b: set[str]) -> dict[str, float]:
-    """Metric 15: shared-vocabulary fraction between two authors.
-
-    NOT per-work: takes two vocab sets (an author vs you), so it lands in a
-    separate raw_vocab table, not raw_measurements. Placeholder.
-    """
-    raise NotImplementedError("jaccard_vocab_overlap")

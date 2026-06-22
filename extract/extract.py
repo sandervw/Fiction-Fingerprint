@@ -2,13 +2,13 @@
 
 Per work: read the manifest, clean markdown to plain prose, parse it with
 spaCy (chunked so long novels don't blow past spaCy's memory limit), and land
-results in DuckDB's `raw` schema:
-  - raw.raw_works         one row per work: (work_id, word_count)
-  - raw.raw_measurements  tidy (work_id, metric, value) - created here,
-                          filled once the stylometrics functions land.
+the results in DuckDB's `raw` schema. The row shapes and table-writing
+functions live in loaders.py, the per-work metrics in stylometrics.py, and the
+vocabulary emitter in vocab.py; this module is the orchestration tying them
+together.
 
 All labels (title, author, tradition...) live in corpus_manifest.csv and
-become dbt seeds, so raw_works only carries what needs the text: word_count.
+become dbt seeds, so the raw tables carry only what needs the text.
 
 Run from anywhere:  python extract/extract.py
 """
@@ -17,17 +17,23 @@ from __future__ import annotations
 
 import csv
 import re
-from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
 
 import duckdb
 import spacy
-from duckdb import DuckDBPyConnection
 from spacy.language import Language
 from spacy.tokens import Doc
 
 from cleaning import clean_markdown
+from loaders import (
+    MeasurementRow,
+    VocabRow,
+    WorkRow,
+    land_measurements,
+    land_vocab,
+    land_works,
+)
 from stylometrics import (
     adjective_density,
     adverb_density,
@@ -44,6 +50,7 @@ from stylometrics import (
     sentence_type_mix,
     yules_k,
 )
+from vocab import vocab_terms
 
 
 # Parse long works in chunks below this many characters. Each chunk stays well
@@ -71,8 +78,7 @@ METRIC_FUNCTIONS = (
 )
 
 
-# --- Data shapes ----------------------------------------------------------
-# Plain data containers use dataclasses (no behaviour, just typed fields).
+# --- Manifest data shape --------------------------------------------------
 
 
 @dataclass(frozen=True)
@@ -81,23 +87,6 @@ class Work:
 
     work_id: str
     rel_path: str  # a .md file OR a folder of chapters, relative to repo root
-
-
-@dataclass(frozen=True)
-class WorkRow:
-    """One measured work, ready to land in raw.raw_works."""
-
-    work_id: str
-    word_count: int
-
-
-@dataclass(frozen=True)
-class MeasurementRow:
-    """One tidy measurement, ready to land in raw.raw_measurements."""
-
-    work_id: str
-    metric: str
-    value: float
 
 
 # --- Filesystem helpers ---------------------------------------------------
@@ -189,8 +178,8 @@ def measure_metrics(work_id: str, doc: Doc) -> list[MeasurementRow]:
     """Run every implemented metric over one work's Doc into tidy rows.
 
     Each metric returns a {name: value} dict (one entry, or several for the
-    multi-value metrics still to come). We flatten those into one
-    MeasurementRow per (work_id, metric, value).
+    multi-value metrics). We flatten those into one MeasurementRow per
+    (work_id, metric, value).
     """
     rows: list[MeasurementRow] = []
     for metric_fn in METRIC_FUNCTIONS:
@@ -199,59 +188,34 @@ def measure_metrics(work_id: str, doc: Doc) -> list[MeasurementRow]:
     return rows
 
 
+def collect_vocab(work_id: str, doc: Doc) -> list[VocabRow]:
+    """Turn one work's content-lemma counts into tidy raw_vocab rows.
+
+    vocab_terms returns a {term: count} Counter; we emit one VocabRow per
+    distinct term. dbt later pools these up to the author for metric 15.
+    """
+    return [VocabRow(work_id, term, count) for term, count in vocab_terms(doc).items()]
+
+
 def measure_work(
     nlp: Language, work: Work, repo_root: Path
-) -> tuple[WorkRow, list[MeasurementRow]]:
-    """Read, clean, and parse one work into its raw_works row + measurements.
+) -> tuple[WorkRow, list[MeasurementRow], list[VocabRow]]:
+    """Read, clean, and parse one work into its work row, measurements, and vocab.
 
-    The text is parsed once into a single work-level Doc; both the word count
-    and every metric read off that same Doc, so the heavy parse happens once.
+    The text is parsed once into a single work-level Doc; the word count, every
+    metric, and the vocabulary all read off that same Doc, so the heavy parse
+    happens once.
     """
     source = repo_root / work.rel_path
     clean = clean_markdown(load_work_text(source))
     doc = build_work_doc(nlp, clean)
     word_count = sum(1 for token in doc if token.is_alpha)
     work_row = WorkRow(work_id=work.work_id, word_count=word_count)
-    return work_row, measure_metrics(work.work_id, doc)
-
-
-# --- Load into DuckDB -----------------------------------------------------
-
-
-def land_works(con: DuckDBPyConnection, rows: Sequence[WorkRow]) -> None:
-    """Create (or replace) raw.raw_works and insert the measured rows.
-
-    raw_works carries only what needs the text (word_count). Titles, authors
-    and other labels stay in the manifest and arrive on the dbt side as seeds.
-    CREATE OR REPLACE keeps re-runs idempotent; ? params keep inserts safe.
-    """
-    con.execute("CREATE SCHEMA IF NOT EXISTS raw")
-    con.execute(
-        "CREATE OR REPLACE TABLE raw.raw_works (work_id VARCHAR, word_count BIGINT)"
+    return (
+        work_row,
+        measure_metrics(work.work_id, doc),
+        collect_vocab(work.work_id, doc),
     )
-    con.executemany(
-        "INSERT INTO raw.raw_works VALUES (?, ?)",
-        [(row.work_id, row.word_count) for row in rows],
-    )
-
-
-def land_measurements(con: DuckDBPyConnection, rows: Sequence[MeasurementRow]) -> None:
-    """Create (or replace) raw.raw_measurements and insert the tidy rows.
-
-    Long/tidy shape - one row per (work, metric, value) - so adding a 16th
-    metric never changes the schema and it pivots cleanly for BI.
-    CREATE OR REPLACE keeps re-runs idempotent; ? params keep inserts safe.
-    """
-    con.execute("CREATE SCHEMA IF NOT EXISTS raw")
-    con.execute(
-        "CREATE OR REPLACE TABLE raw.raw_measurements ("
-        " work_id VARCHAR, metric VARCHAR, value DOUBLE)"
-    )
-    if rows:
-        con.executemany(
-            "INSERT INTO raw.raw_measurements VALUES (?, ?, ?)",
-            [(row.work_id, row.metric, row.value) for row in rows],
-        )
 
 
 # --- Orchestration --------------------------------------------------------
@@ -267,25 +231,28 @@ def main() -> None:
     nlp = spacy.load("en_core_web_sm", disable=["ner"])
     works = read_manifest(manifest_path)
 
-    # One parse per work yields both its work row and its measurement rows.
+    # One parse per work yields its work row, measurement rows, and vocab rows.
     work_rows: list[WorkRow] = []
     measurement_rows: list[MeasurementRow] = []
+    vocab_rows: list[VocabRow] = []
     for work in works:
-        work_row, metric_rows = measure_work(nlp, work, repo_root)
+        work_row, metric_rows, term_rows = measure_work(nlp, work, repo_root)
         work_rows.append(work_row)
         measurement_rows.extend(metric_rows)
+        vocab_rows.extend(term_rows)
 
     # duckdb connections are context managers, so the file is closed cleanly.
     with duckdb.connect(str(db_path)) as con:
         land_works(con, work_rows)
         land_measurements(con, measurement_rows)
+        land_vocab(con, vocab_rows)
 
     total_words = sum(row.word_count for row in work_rows)
-    metric_count = len(METRIC_FUNCTIONS)
     print(
-        f"Landed {len(work_rows)} works into raw.raw_works ({total_words:,} words); "
+        f"Landed {len(work_rows)} works ({total_words:,} words); "
         f"{len(measurement_rows):,} rows into raw.raw_measurements "
-        f"({metric_count} metrics)."
+        f"({len(METRIC_FUNCTIONS)} metrics); "
+        f"{len(vocab_rows):,} rows into raw.raw_vocab."
     )
 
 

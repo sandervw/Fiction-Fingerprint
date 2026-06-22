@@ -30,3 +30,15 @@ create profiles.yml in project root
 
 `duckdb -ui prose_fingerprint/warehouse.duckdb`      # browser UI (object tree + grid)
 `duckdb prose_fingerprint/warehouse.duckdb `         # SQL shell: .tables, SELECT ... LIMIT 10
+
+## Design Decisions
+
+The cleansing/quality part of transformation lives in the python extract (cleaning.py)
+- strips out markdown (keeps source files intact while cleaning up text for downstream)
+- Flattens multi-value stylometric measures into single work-metric-value rows
+
+Keep reference tables for list-based metrics (archaic words, function words, punctuation) in lexicons.py
+
+Python creates a few 'raw' schema tables in duckdb
+- raw_measurements (one row per work_id, metric, and value)
+- raw_works (one row per work_id and wordcount)

@@ -17,12 +17,37 @@ A 3-week dbt Core project that models stylometric measurements of studied author
    NOT dbt's job        the "L"           the "T" — focus     the "exposure"
 ```
 
-- **Extractor (Python):** uses **spaCy**. Emits **tidy rows**, never wide tables — one row per `(work, metric, value)`. Lands them in DuckDB.
+- **Extractor (Python):** lives at repo-root `extract/`, outside the dbt project (portability). Uses **spaCy** (`en_core_web_sm`, NER off). Emits **tidy rows**, never wide tables. Lands three `raw` tables in DuckDB (see §1.1).
 - **DuckDB:** zero-infra local warehouse — a single file, no server to run. Gentlest warehouse to start on (it's basically "SQLite for analytics"), and the `dbt-duckdb` adapter is first-rate.
 - **dbt Core:** the part you're here to learn. Everything below.
 - **BI:** see §6.
 
 > **Keep all messy text/regex/list work in Python.** This is both good architecture _and_ the #1 portability rule — Fabric's T-SQL warehouse surface won't have DuckDB's string/list/regex niceties. dbt SQL stays joins, aggregations, and window functions that exist in both engines.
+
+### 1.1 Extractor, as built
+
+Modules under `extract/` (each ≤300 lines, full type hints):
+
+| Module            | Job                                                            |
+| ----------------- | ------------------------------------------------------------- |
+| `extract.py`      | orchestration: manifest → clean → parse → land                |
+| `cleaning.py`     | markdown → plain prose (regex only; keeps prose punctuation)  |
+| `stylometrics.py` | the 14 per-work metric functions                              |
+| `lexicons.py`     | tunable tables (function words, archaic list, punctuation)    |
+| `vocab.py`        | metric 15's vocabulary emitter (content-word lemmas)          |
+| `loaders.py`      | DuckDB landing: row shapes + writing the three `raw` tables    |
+
+**Metric contract:** each per-work metric is `(doc: Doc) -> dict[str, float]`. The driver flattens that dict to tidy rows, so a multi-value metric (function words, punctuation, sentence type) becomes N rows; its keys use `prefix_subkey` (`funcword_the`, `punct_semicolon`, `senttype_complex`). A "word" is a spaCy `is_alpha` token, the shared denominator throughout.
+
+**Raw landing tables** (one parse per work feeds all three):
+
+| Table                  | Grain         | Columns                      |
+| ---------------------- | ------------- | ---------------------------- |
+| `raw.raw_works`        | work          | `work_id`, `word_count`      |
+| `raw.raw_measurements` | work × metric | `work_id`, `metric`, `value` |
+| `raw.raw_vocab`        | work × term   | `work_id`, `term`, `term_count` |
+
+Labels (title, author, tradition, era, is_self) stay in `corpus_manifest.csv` and arrive on the dbt side as seeds; `prose_type` is derived in `dim_work` from `word_count`. Corpus: 51 works (24 self + 27 others), ~1.97M words.
 
 ---
 
@@ -47,23 +72,66 @@ The primary fact is deliberately **tall and narrow** — one row per work per me
 
 ## 3. The 15 Metrics (final set)
 
-| #   | Metric                       | Category    | Summary                                                       |
-| --- | ---------------------------- | ----------- | ------------------------------------------------------------- |
-| 1   | Mean word length             | lexical     | Average characters per word; denser diction runs longer.      |
-| 2   | Yule's K                     | lexical     | Vocabulary richness that stays stable across text length.     |
-| 3   | % archaic/rare words         | lexical     | Proportion matching an archaic/rare-word list (CAS, Eddison). |
-| 4   | Honoré's R                   | lexical     | Richness from hapax proportion; length-robust vs type-token.  |
-| 5   | Function-word frequency      | lexical     | Rates of "the, of, and"; classic hard-to-fake fingerprint.    |
-| 6   | Mean sentence length         | syntactic   | Average words per sentence; pacing proxy.                     |
-| 7   | Sentence-length stdev        | syntactic   | Variation in sentence length; rhythm "burstiness" (Peake).    |
-| 8   | Mean parse-tree depth        | syntactic   | Average grammatical nesting depth from dependency parse.      |
-| 9   | Sentence-type mix            | syntactic   | Proportion of simple, compound, and complex sentences.        |
-| 10  | Punctuation frequency        | mechanical  | Rates of all marks (semicolons, dashes, colons, commas).      |
-| 11  | Contraction rate             | mechanical  | Frequency of contractions ("don't"); deeply ingrained habit.  |
+| #   | Metric                       | Category    | Summary                                                            |
+| --- | ---------------------------- | ----------- | ------------------------------------------------------------------ |
+| 1   | Mean word length             | lexical     | Average characters per word; denser diction runs longer.           |
+| 2   | Yule's K                     | lexical     | Vocabulary richness; higher = more repetition (poorer); length-stable. |
+| 3   | % archaic/rare words         | lexical     | Proportion matching an archaic/rare-word list (CAS, Eddison).      |
+| 4   | Honoré's R                   | lexical     | Richness from hapax proportion; higher = richer vocabulary; length-robust. |
+| 5   | Function-word frequency      | lexical     | Rates of "the, of, and"; classic hard-to-fake fingerprint.         |
+| 6   | Mean sentence length         | syntactic   | Average words per sentence; pacing proxy.                          |
+| 7   | Sentence-length stdev        | syntactic   | Variation in sentence length; rhythm "burstiness" (Peake).         |
+| 8   | Mean parse-tree depth        | syntactic   | Average grammatical nesting depth from dependency parse.           |
+| 9   | Sentence-type mix            | syntactic   | Proportion of simple, compound, and complex sentences.             |
+| 10  | Punctuation frequency        | mechanical  | Rates of all marks (semicolons, dashes, colons, commas).           |
+| 11  | Contraction rate             | mechanical  | Frequency of contractions ("don't"); deeply ingrained habit.       |
 | 12  | Dialogue : narration ratio   | structural  | Share of quoted speech versus narration (Vance high, Eddison low). |
-| 13  | Adjective density            | structural  | Adjectives as a fraction of all words; descriptive heaviness. |
-| 14  | Adverb density               | structural  | Adverbs as a fraction of all words; a "weak prose" tell.      |
-| 15  | Jaccard vocab overlap vs you | distinctive | Shared-vocabulary fraction between an author and you.         |
+| 13  | Adjective density            | structural  | Adjectives as a fraction of all words; descriptive heaviness.      |
+| 14  | Adverb density               | structural  | Adverbs as a fraction of all words; a "weak prose" tell.           |
+| 15  | Jaccard vocab overlap vs you | distinctive | Shared-vocabulary fraction between an author and you.              |
+
+### 3.1 Metric 15 in detail: Jaccard vocabulary overlap
+
+Metric 15 is the odd one out: it compares two authors, so its grain and implementation both differ from the other 14.
+
+**Python emits a vocabulary, not a value.** `vocab.py`'s `vocab_terms(doc)` returns a work's **content-word lemmas** with their per-work counts (open-class POS, stopwords dropped, lemmatised and lowercased; proper nouns excluded so character names don't drown the signal). These land as tidy `raw.raw_vocab` rows, tens of thousands of them, one per `(work_id, term, term_count)`. The count is unused by Jaccard (which is presence-based) but is there for later frequency work like TF-IDF or weighted overlap:
+
+| work_id            | term     | term_count |
+| ------------------ | -------- | ---------- |
+| rhialto-marvellous | sorcerer |         14 |
+| rhialto-marvellous | journey  |          5 |
+| the-glass-sky      | sorcerer |          9 |
+| the-glass-sky      | glass    |         22 |
+
+**dbt computes the overlap** in `int_vocab_jaccard.sql`. It pools each author's works into one vocabulary (join `raw_vocab → works → authors`, then `distinct term`), then measures every other author against you. Intersection is an INNER JOIN on `term`; union is `|A| + |B| - |A∩B|`. Pure joins and counts, so it ports to Fabric.
+
+```sql
+with author_vocab as (
+    select distinct a.author_key, a.is_self, v.term
+    from {{ ref('stg_vocab') }}  v
+    join {{ ref('stg_works') }}  w on v.work_id = w.work_id
+    join {{ ref('seed_authors') }} a on w.author_key = a.author_key
+),
+me   as (select term from author_vocab where is_self),
+them as (select author_key, term from author_vocab where not is_self),
+my_size    as (select count(*) as my_size from me),
+their_size as (select author_key, count(*) as their_size from them group by author_key),
+shared as (
+    select t.author_key, count(*) as shared_terms   -- |A ∩ B|: terms that survive the join
+    from them t join me on t.term = me.term
+    group by t.author_key
+)
+select
+    ts.author_key,
+    sh.shared_terms,
+    sh.shared_terms * 1.0
+        / (m.my_size + ts.their_size - sh.shared_terms) as jaccard   -- |A∩B| / |A∪B|
+from their_size ts
+join shared sh on ts.author_key = sh.author_key
+cross join my_size m
+```
+
+**Worked example.** You = {sorcerer, journey, glass, horizon}; Vance = {sorcerer, magic, journey, tower}. Shared = {sorcerer, journey} = 2; union = 4 + 4 - 2 = 6; jaccard = 2 / 6 = **0.33**. One row out per other author feeds `fact_vocab_overlap`.
 
 ---
 
