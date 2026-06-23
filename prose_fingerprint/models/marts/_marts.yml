@@ -1,0 +1,46 @@
+version: 2
+
+models:
+  - name: dim_metric
+    description: "One row per metric concept (15). Pass-through of seed_metrics + surrogate key."
+    columns:
+      - name: metric_key
+        description: "Surrogate hash of metric_name. Facts join on this, not the free-text name."
+        data_tests:
+          - unique
+          - not_null
+
+  - name: dim_author
+    description: "One row per author, deduped from the work-grain seed (Option A)."
+    columns:
+      - name: author_key
+        description: "Surrogate hash of author name."
+        data_tests:
+          - unique          # fails loudly if an author's works disagree on tradition/era
+          - not_null
+
+  - name: dim_work
+    description: "One row per work (51). Catalog spine (seed_authors) + word_count enrichment."
+    columns:
+      - name: work_key
+        description: "Surrogate hash of work_id."
+        data_tests:
+          - unique
+          - not_null
+      - name: word_count
+        description: "Cleaned word count from stg_works."
+        data_tests:
+          - not_null        # catches a catalogued work that never got measured
+      - name: author_key
+        description: "FK to dim_author."
+        data_tests:
+          - relationships:   # every work's author must exist in dim_author
+              arguments:
+                to: ref('dim_author')
+                field: author_key
+      - name: prose_type
+        description: "Derived size band from word_count thresholds."
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['short-story', 'novella', 'novel']
