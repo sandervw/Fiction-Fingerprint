@@ -1,0 +1,6 @@
+# External dbt packages. Installed into dbt_packages/ by `dbt deps`.
+# dbt_utils = cross-database macros that compile per-adapter (the Fabric-portability win).
+# We need: generate_surrogate_key (stable dim/fact keys) and pivot (tidy → wide mart).
+packages:
+  - package: dbt-labs/dbt_utils
+    version: [">=1.0.0", "<2.0.0"]

@@ -14,12 +14,12 @@ prose_fingerprint:
   outputs:
     dev:
       type: duckdb
-      path: warehouse.duckdb     # single file; created on first run
+      path: /abs/path/to/warehouse.duckdb  # ABSOLUTE; see CWD warning below
       threads: 4
       # schema: main             # optional default schema
 ```
 
-`path` is the DuckDB file (relative to project root). `:memory:` for an ephemeral DB. This is where the dual-target swap happens later: add a `fabric:` output alongside `dev`, change `target`, no model changes.
+`path` is the DuckDB file. **A relative `path` is resolved against the current working directory, NOT the project dir** (verified 2026-06-22; the README/Context7 examples all use absolute paths). Running dbt from a different folder with a relative path silently creates a SECOND DB there. Fix: use an absolute path (our `profiles.yml` does). `:memory:` for an ephemeral DB. This is where the dual-target swap happens later: add a `fabric:` output alongside `dev`, change `target`, no model changes.
 
 Optional `plugins:` load Python integrations (gsheet, excel, sqlalchemy) at connection time. Not needed for our flow, but it's how dbt-duckdb reaches outside data.
 

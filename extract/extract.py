@@ -224,7 +224,10 @@ def measure_work(
 
 def main() -> None:
     repo_root = find_repo_root()
-    manifest_path = repo_root / "corpus_manifest.csv"
+    # Single source of truth: the manifest IS the dbt seed. The extractor reads
+    # the same file dbt loads, so the two can never drift. Work paths inside it
+    # stay relative to repo_root, so they still resolve from here.
+    manifest_path = repo_root / "prose_fingerprint" / "seeds" / "seed_authors.csv"
     db_path = repo_root / "prose_fingerprint" / "warehouse.duckdb"
 
     # Disable NER: none of the 15 metrics use named entities, and skipping it

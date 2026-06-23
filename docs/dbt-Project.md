@@ -47,7 +47,7 @@ Modules under `extract/` (each ≤300 lines, full type hints):
 | `raw.raw_measurements` | work × metric | `work_id`, `metric`, `value` |
 | `raw.raw_vocab`        | work × term   | `work_id`, `term`, `term_count` |
 
-Labels (title, author, tradition, era, is_self) stay in `corpus_manifest.csv` and arrive on the dbt side as seeds; `prose_type` is derived in `dim_work` from `word_count`. Corpus: 51 works (24 self + 27 others), ~1.97M words.
+Labels (title, author, tradition, era, is_self) stay in `seed_authors.csv` and arrive on the dbt side as seeds; `prose_type` is derived in `dim_work` from `word_count`. Corpus: 51 works (24 self + 27 others), ~1.97M words.
 
 ---
 
@@ -61,7 +61,7 @@ The primary fact is deliberately **tall and narrow** — one row per work per me
 | ----------------------------------------- | ------------------ | --------------------------------------------------------------- |
 | `dim_author`                              | one row per author | `author_key`, `name`, `tradition`, `era`, `is_self`             |
 | `dim_work`                                | one row per work   | `work_key`, `author_key`, `title`, `year`, `word_count`, `type` |
-| `dim_metric`                              | one row per metric | `metric_key`, `metric_name`, `category`, `unit`, `higher_is`    |
+| `dim_metric`                              | one row per metric | `metric_key`, `metric_name`, `display_name`, `category`, `unit`, `higher_means`, `description`, `formula`, `is_multivalue` |
 | `fact_style_measurement` _(primary)_      | work × metric      | `work_key`, `author_key`, `metric_key`, `value`, `z_score`      |
 | `fact_vocab_overlap` _(secondary)_        | author pair        | `author_key_a`, `author_key_b`, `jaccard`, `shared_terms`       |
 | `fact_sentence_length_bins` _(secondary)_ | work × bin         | `work_key`, `length_bin`, `sentence_count`                      |
@@ -227,10 +227,10 @@ Lean **Evidence.dev** — it's the analytics-engineering BI idiom and pairs nati
 
 ### Week 1 — Environment + Extract/Load
 
-- Install `dbt-core` + `dbt-duckdb`; `dbt init prose_fingerprint`; `dbt debug` green.
-- Write the Python extractor: sentence seg, tokenization, dialogue detection, the 15 metric calcs.
-- Land tidy `(work, metric, value)` rows + work metadata into DuckDB `raw` schema.
-- Seeds in; `stg_*` views compile; first `dbt run`.
+- Install `dbt-core` + `dbt-duckdb` + `dbt_utils`; `dbt init prose_fingerprint`; `dbt debug` green.
+- Python extractor: segmentation, tokenization, dialogue detection, 14 per-work metrics + Jaccard vocabulary.
+- Land three `raw` tables: `raw_works (work_id, word_count)`, `raw_measurements (work_id, metric, value)`, `raw_vocab (work_id, term, term_count)`.
+- Seeds in (`seed_authors`, `seed_metrics`); `stg_*` views compile; first `dbt run`.
 - **Done when:** raw data lands and staging models build clean.
 
 ### Week 2 — Model + Test

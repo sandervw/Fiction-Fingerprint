@@ -3,7 +3,11 @@ prose_fingerprint:
   outputs:
     duckdb:
       type: duckdb
-      path: warehouse.duckdb     # single file, created on first run, relative to project root
+      # Absolute on purpose: dbt-duckdb resolves a RELATIVE path against the
+      # current working dir (not the project), so running dbt from elsewhere
+      # silently makes a second DB. Anchoring it kills that foot-gun. The
+      # .duckdb file is gitignored; on another machine, override via env_var.
+      path: C:/Users/Sander/OneDrive/Documents/Github/Fiction-Fingerprint/prose_fingerprint/warehouse.duckdb
       threads: 4
     # fabric:                    # add later for the portability swap — no model changes
     #   type: fabric

@@ -2,6 +2,8 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+**IMPORTANT:** Whenever possible, keep responses to the user under 150 words.
+
 ## Purpose
 
 A learning project for **dbt Core + DuckDB**. The domain (stylometric "fingerprints" of authors vs the user's own prose) is the vehicle; the goal is mastering the analytics-engineering stack.
@@ -24,3 +26,7 @@ A learning project for **dbt Core + DuckDB**. The domain (stylometric "fingerpri
 
 - Windows 11, bash terminal, VS Code. Python 3.14 and `uv` are installed.
 - Before suggesting any `uv` command, explain how it differs from plain `python`/`pip`.
+
+---
+
+**REMINDER:** Whenever possible, keep responses to the user under 150 words.
