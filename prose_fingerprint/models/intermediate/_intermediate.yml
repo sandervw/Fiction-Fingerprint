@@ -1,0 +1,42 @@
+version: 2
+
+models:
+  - name: int_measurements_normalized
+    description: >
+      Every measurement (work x metric series) with a per-metric z-score
+      (population stddev, via the zscore macro). Grain: one row per work x
+      measured series (3,213 = 51 works x 63 series). metric_key is bridged
+      from each child series to its concept row in dim_metric by prefix.
+    columns:
+      - name: metric_key
+        description: "FK to dim_metric (concept grain). NULL only if a child prefix is left unmapped."
+        data_tests:
+          - not_null            # tripwire: a forgotten prefix shows up as a NULL key, not a dropped row
+          - relationships:      # every mapped key must exist in dim_metric
+              arguments:
+                to: ref('dim_metric')
+                field: metric_key
+
+  - name: int_vocab_jaccard
+    description: >
+      Metric 15: Jaccard vocabulary overlap between you (is_self) and every other
+      author. Grain: one row per other author (9). jaccard = shared / combined
+      unique terms, presence-based (term_count ignored).
+    columns:
+      - name: author_key
+        description: "The OTHER author measured against you. FK to dim_author; one row per author (grain)."
+        data_tests:
+          - unique              # grain guard: exactly one overlap row per other author
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_author')
+                field: author_key
+      - name: jaccard
+        description: "|A∩B| / |A∪B|. A proper fraction, so must sit in [0, 1]."
+        data_tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                max_value: 1
+                inclusive: true

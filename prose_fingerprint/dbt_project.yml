@@ -31,5 +31,7 @@ models:
   prose_fingerprint:
     staging:
       +materialized: view
+    intermediate:
+      +materialized: view    # inspectable + testable; switch to ephemeral if we ever want a tidy warehouse
     marts:
       +materialized: table

@@ -62,7 +62,7 @@ The primary fact is deliberately **tall and narrow** — one row per work per me
 | `dim_author`                              | one row per author | `author_key`, `name`, `tradition`, `era`, `is_self`             |
 | `dim_work`                                | one row per work   | `work_key`, `author_key`, `title`, `year`, `word_count`, `type` |
 | `dim_metric`                              | one row per metric | `metric_key`, `metric_name`, `display_name`, `category`, `unit`, `higher_means`, `description`, `formula`, `is_multivalue` |
-| `fact_style_measurement` _(primary)_      | work × metric      | `work_key`, `author_key`, `metric_key`, `value`, `z_score`      |
+| `fact_style_measurement` _(primary)_      | work × metric      | `work_key`, `author_key`, `metric_key`, `value`, `zscore`      |
 | `fact_vocab_overlap` _(secondary)_        | author pair        | `author_key_a`, `author_key_b`, `jaccard`, `shared_terms`       |
 | `fact_sentence_length_bins` _(secondary)_ | work × bin         | `work_key`, `length_bin`, `sentence_count`                      |
 
@@ -103,14 +103,14 @@ Metric 15 is the odd one out: it compares two authors, so its grain and implemen
 | the-glass-sky      | sorcerer |          9 |
 | the-glass-sky      | glass    |         22 |
 
-**dbt computes the overlap** in `int_vocab_jaccard.sql`. It pools each author's works into one vocabulary (join `raw_vocab → works → authors`, then `distinct term`), then measures every other author against you. Intersection is an INNER JOIN on `term`; union is `|A| + |B| - |A∩B|`. Pure joins and counts, so it ports to Fabric.
+**dbt computes the overlap** in `int_vocab_jaccard.sql`. It pools each author's works into one distinct-term vocabulary (`stg_vocab → dim_work → dim_author`, then `distinct term`), then measures every other author against you. Intersection is a join on `term`; union is `|A| + |B| - |A∩B|`. Pure joins and counts, so it ports to Fabric. As built: 10 authors (1 self + 9 others) → 9 output rows, and a LEFT join keeps a zero-overlap author at jaccard=0 rather than dropping it.
 
 ```sql
 with author_vocab as (
-    select distinct a.author_key, a.is_self, v.term
-    from {{ ref('stg_vocab') }}  v
-    join {{ ref('stg_works') }}  w on v.work_id = w.work_id
-    join {{ ref('seed_authors') }} a on w.author_key = a.author_key
+    select distinct dw.author_key, da.is_self, v.term
+    from {{ ref('stg_vocab') }}   v
+    join {{ ref('dim_work') }}    dw on v.work_id = dw.work_id
+    join {{ ref('dim_author') }}  da on dw.author_key = da.author_key
 ),
 me   as (select term from author_vocab where is_self),
 them as (select author_key, term from author_vocab where not is_self),
@@ -123,11 +123,11 @@ shared as (
 )
 select
     ts.author_key,
-    sh.shared_terms,
-    sh.shared_terms * 1.0
-        / (m.my_size + ts.their_size - sh.shared_terms) as jaccard   -- |A∩B| / |A∪B|
+    coalesce(sh.shared_terms, 0) as shared_terms,
+    coalesce(sh.shared_terms, 0) * 1.0
+        / (m.my_size + ts.their_size - coalesce(sh.shared_terms, 0)) as jaccard   -- |A∩B| / |A∪B|
 from their_size ts
-join shared sh on ts.author_key = sh.author_key
+left join shared sh on ts.author_key = sh.author_key   -- LEFT: a zero-overlap author still emits jaccard=0
 cross join my_size m
 ```
 
@@ -188,11 +188,11 @@ prose_fingerprint/
 -- macros/zscore.sql
 {% macro zscore(value_col, partition_col) %}
   ({{ value_col }} - avg({{ value_col }}) over (partition by {{ partition_col }}))
-  / nullif(stddev({{ value_col }}) over (partition by {{ partition_col }}), 0)
+  / nullif(stddev_pop({{ value_col }}) over (partition by {{ partition_col }}), 0)
 {% endmacro %}
 ```
 
-Used in `int_measurements_normalized.sql` to make 15 metrics on wildly different scales comparable on one radar chart. Window functions exist in both DuckDB and Fabric → portable.
+**As built:** uses `stddev_pop` (divide by N), not sample `stddev` (divide by N-1), because the 51 works ARE the whole corpus, not a sample of a larger population, so the population spread is the honest one. Called in `int_measurements_normalized.sql` as `{{ zscore('value', 'metric_name') }}`, partitioned by the **child** series name (the 63 measured `funcword_*` / `punct_*` / `senttype_*` / single-value names), NOT the 15 concept keys, so each series gets its own mean/spread. Children bridge to their `dim_metric` concept row by prefix via a LEFT join, so an unmapped prefix surfaces as a NULL `metric_key` that a `not_null` test catches instead of a silently dropped row. Window functions exist in both DuckDB and Fabric → portable.
 
 ---
 

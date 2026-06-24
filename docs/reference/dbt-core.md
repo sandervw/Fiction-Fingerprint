@@ -170,11 +170,11 @@ Macros = reusable SQL templated with Jinja, in `macros/`. The z-score macro from
 -- macros/zscore.sql
 {% macro zscore(value_col, partition_col) %}
   ({{ value_col }} - avg({{ value_col }}) over (partition by {{ partition_col }}))
-  / nullif(stddev({{ value_col }}) over (partition by {{ partition_col }}), 0)
+  / nullif(stddev_pop({{ value_col }}) over (partition by {{ partition_col }}), 0)
 {% endmacro %}
 ```
 
-Call inside a model: `{{ zscore('value', 'metric_key') }}`. Window functions exist in both DuckDB and Fabric, so this stays portable.
+`stddev_pop` (divide by N), not `stddev`/`stddev_samp` (divide by N-1): our 51 works ARE the whole corpus, not a sample of a larger population, so the population stddev is the honest spread. Call inside a model: `{{ zscore('value', 'metric_name') }}` (partition by the measured child series). Window functions exist in both DuckDB and Fabric, so this stays portable.
 
 ---
 

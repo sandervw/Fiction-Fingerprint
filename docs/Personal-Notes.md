@@ -57,22 +57,20 @@ Python creates a few 'raw' schema tables in duckdb
 
 ## dbt Dimensions
 
-A dimension is NOT a special dbt object. It is just a model: one `.sql` file = one `SELECT`.
-dbt runs the SELECT and wraps it in `CREATE TABLE AS ...` for me. "dim" vs "fact" is star-schema
-naming, not dbt syntax. The `.sql` is a recipe, not the dish; dbt cooks it each `dbt run`.
+A dimension is just a model: one `.sql` file = one `SELECT`.
+dbt runs the SELECT and wraps it in `CREATE TABLE AS ...`;
 
 ### Where each thing lives
 
-| Concern | Where | How |
-|---|---|---|
-| Schema (columns) | `models/marts/dim_work.sql` | Defined implicitly by the SELECT's column list. The columns I select ARE the table's columns. No hand-written DDL. |
-| Schema (documented + typed + tested) | `models/marts/_marts.yml` | Optional `version: 2` properties file: column descriptions, `data_tests` (unique/not_null/relationships). The explicit contract, NOT the source of the columns. |
-| Transformations | same `dim_work.sql` | The SELECT body: `CASE` for prose_type, `DISTINCT`/`GROUP BY` to dedup, `dbt_utils.generate_surrogate_key` for keys. |
-| Where it loads from | inside the SELECT | `{{ ref('seed_authors') }}`, `{{ ref('stg_works') }}`. Never hardcoded names. `ref()` builds the DAG so dbt knows build order. |
-| Materialization | `dbt_project.yml` | `marts: +materialized: table`. Override per-model with `{{ config(...) }}`. |
+| Concern                              | Where                       | How                                                                                           |
+| ------------------------------------ | --------------------------- | --------------------------------------------------------------------------------------------- |
+| Schema (columns)                     | `models/marts/dim_work.sql` | Defined implicitly by the SELECT's column list. The columns I select ARE the table's columns. |
+| Schema (documented + typed + tested) | `models/marts/_marts.yml`   | Optional properties file: column descriptions, `data_tests` (unique/not_null/relationships).  |
+| Transformations                      | same `dim_work.sql`         | The SELECT body: `dbt_utils.generate_surrogate_key` for keys.                                 |
+| Where it loads from                  | inside the SELECT           | `{{ ref('seed_authors') }}`, `{{ ref('stg_works') }}`. `ref()` builds the DAG                 |
+| Materialization                      | `dbt_project.yml`           | `marts: +materialized: table`. Override per-model with `{{ config(...) }}`.                   |
 
-Key point: schema and transformation are the SAME file (the SELECT). The `.yml` only describes
-and tests what that SELECT produces; it does not define the columns.
+Key point: schema and transformation are the SAME file (the SELECT). The `.yml` only describes and tests what that SELECT produces
 
 ### Files for one dimension (e.g. dim_work)
 
@@ -83,18 +81,35 @@ and tests what that SELECT produces; it does not define the columns.
 
 ### Materializations
 
-A materialization answers one question: when I run this SELECT, what physical thing should exist
-in the warehouse afterward? The model is always just a SELECT; the materialization is the build
-strategy (the DDL wrapper dbt generates). Analogy: the SELECT is the recipe. The materialization
-decides whether to cook fresh on every order (view) or batch-cook and store the dish (table).
+A materialization answers: when I run this SELECT, what physical thing should exist in the warehouse? It's the build strategy (the DDL wrapper dbt generates).
 
-| Type | dbt builds | Trade-off |
-|---|---|---|
-| `view` | `CREATE VIEW`, recomputed on every read | cheap to build, always fresh, slower to query. Our `staging/`. |
-| `table` | `CREATE TABLE AS`, rebuilt each `dbt run` | costs build time + storage, fast to query. Our `marts/`. |
-| `incremental` | table built once, then only new rows appended | for big append-only data; overkill for a static corpus. |
-| `ephemeral` | nothing; inlined as a CTE into downstream models | reusable logic with no DB object. |
+| Type          | dbt builds                                       | Trade-off                                                      |
+| ------------- | ------------------------------------------------ | -------------------------------------------------------------- |
+| `view`        | `CREATE VIEW`, recomputed on every read          | cheap to build, always fresh, slower to query. Our `staging/`. |
+| `table`       | `CREATE TABLE AS`, rebuilt each `dbt run`        | costs build time + storage, fast to query. Our `marts/`.       |
+| `incremental` | table built once, then only new rows appended    | for big append-only data; overkill for a static corpus.        |
+| `ephemeral`   | nothing; inlined as a CTE into downstream models | reusable logic with no DB object.                              |
 
 Purpose: it decouples WHAT the data is (the SELECT) from HOW/WHEN it is stored and refreshed.
-Flip a view into a table by changing one config line; the SQL never changes. That is the
-build-cost vs query-cost trade.
+Flip a view into a table by changing one config line; the SQL never changes.
+
+## Seeds
+
+Seeds are small, static CSV files you keep inside your dbt project
+- dbt loads into the warehouse as tables
+- Version-controlled lookup tables, baked into the repo
+- Use seeds for small reference datasets such as country codes, region mappings, or business-defined categories
+- Ref() them downstream like any model
+
+## Marts
+
+Same concept from BI, just expressed as code
+- Serve-ready, business-facing layer (dim_/fct_/agg_ tables)
+- In a modular data modeling approach, data marts sit at the top of the transformation hierarchy
+- Organize them by domain, exactly like your finance and marketing marts
+- dbt recommends denormalizing heavily into wide tables; with one
+- Keep marts relatively simple and avoid too many joins, pushing complexity into the intermediate layer. 
+
+## Macros
+
+Like a User Defined Function in sql server, except they aren't artifacts created on a DB - they are translated into sql at compile time
