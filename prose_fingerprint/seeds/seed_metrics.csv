@@ -1,16 +1,16 @@
-metric_name,display_name,category,unit,higher_means,description,formula,is_multivalue
-mean_word_length,Mean word length,lexical,chars,longer/denser diction,Average characters per word over alphabetic tokens.,sum(len(word)) / word_count,false
-yules_k,Yule's K,lexical,index,more repetition (poorer vocabulary),Length-stable lexical richness; repetition raises K.,"10^4 * (S2 - N) / N^2 (S2=sum of squared type freqs, N=tokens)",false
-archaic_word_rate,% archaic/rare words,lexical,ratio,more archaic diction,Share of words matching a curated archaic/rare-word list.,archaic_words / word_count,false
-honore_r,Honoré's R,lexical,index,richer vocabulary,Hapax-based lexical richness; more once-only words raise R.,"100 * ln(N) / (1 - V1/V) (V1=hapaxes, V=types)",false
-function_word_frequency,Function-word frequency,lexical,ratio,more frequent use of the function word,"Per-word rate of each common function word (the, of, and); a hard-to-fake fingerprint.",count(word) / word_count,true
-mean_sentence_length,Mean sentence length,syntactic,words,longer sentences,Average alphabetic words per sentence; a pacing proxy.,word_count / sentence_count,false
-sentence_length_stdev,Sentence-length stdev,syntactic,words,burstier rhythm (varied sentence lengths),Population standard deviation of sentence length in words.,pstdev(words per sentence),false
-mean_parse_tree_depth,Mean parse-tree depth,syntactic,levels,more grammatical nesting (hypotactic prose),Mean over sentences of the deepest token's distance to the dependency ROOT.,mean(max token depth per sentence),false
-sentence_type_mix,Sentence-type mix,syntactic,ratio,larger share of that sentence type,"Shares of simple, compound, and complex sentences (sum to 1).",count(type) / sentence_count,true
-punctuation_frequency,Punctuation frequency,mechanical,ratio,heavier use of that mark,"Per-word rate of each punctuation group (commas, semicolons, dashes).",count(mark) / word_count,true
-contraction_rate,Contraction rate,mechanical,ratio,more contractions (informal register),Contractions per word; excludes the possessive 's.,contractions / word_count,false
-dialogue_narration_ratio,Dialogue : narration ratio,structural,ratio,more dialogue relative to narration,Fraction of words inside double quotes.,quoted_words / word_count,false
-adjective_density,Adjective density,structural,ratio,more adjective-heavy description,ADJ-tagged tokens as a fraction of all words.,adjective_count / word_count,false
-adverb_density,Adverb density,structural,ratio,more adverb-heavy (a weak-prose tell),ADV-tagged tokens as a fraction of all words.,adverb_count / word_count,false
-jaccard,Jaccard vocab overlap vs you,distinctive,ratio,more vocabulary overlap with you,"Shared-vocabulary fraction between an author and you, over content-word lemmas; computed dbt-side.",shared_terms / (size_a + size_b - shared_terms),false
+metric_name,display_name,category,unit,higher_means,description,formula,is_multivalue,additivity
+mean_word_length,Mean word length,lexical,chars,longer/denser diction,Average characters per word over alphabetic tokens.,sum(len(word)) / word_count,false,non-additive
+yules_k,Yule's K,lexical,index,more repetition (poorer vocabulary),Length-stable lexical richness; repetition raises K.,"10^4 * (S2 - N) / N^2 (S2=sum of squared type freqs, N=tokens)",false,non-additive
+archaic_word_rate,% archaic/rare words,lexical,ratio,more archaic diction,Share of words matching a curated archaic/rare-word list.,archaic_words / word_count,false,non-additive
+honore_r,Honoré's R,lexical,index,richer vocabulary,Hapax-based lexical richness; more once-only words raise R.,"100 * ln(N) / (1 - V1/V) (V1=hapaxes, V=types)",false,non-additive
+function_word_frequency,Function-word frequency,lexical,ratio,more frequent use of the function word,"Per-word rate of each common function word (the, of, and); a hard-to-fake fingerprint.",count(word) / word_count,true,non-additive
+mean_sentence_length,Mean sentence length,syntactic,words,longer sentences,Average alphabetic words per sentence; a pacing proxy.,word_count / sentence_count,false,non-additive
+sentence_length_stdev,Sentence-length stdev,syntactic,words,burstier rhythm (varied sentence lengths),Population standard deviation of sentence length in words.,pstdev(words per sentence),false,non-additive
+mean_parse_tree_depth,Mean parse-tree depth,syntactic,levels,more grammatical nesting (hypotactic prose),Mean over sentences of the deepest token's distance to the dependency ROOT.,mean(max token depth per sentence),false,non-additive
+sentence_type_mix,Sentence-type mix,syntactic,ratio,larger share of that sentence type,"Shares of simple, compound, and complex sentences (sum to 1).",count(type) / sentence_count,true,non-additive
+punctuation_frequency,Punctuation frequency,mechanical,ratio,heavier use of that mark,"Per-word rate of each punctuation group (commas, semicolons, dashes).",count(mark) / word_count,true,non-additive
+contraction_rate,Contraction rate,mechanical,ratio,more contractions (informal register),Contractions per word; excludes the possessive 's.,contractions / word_count,false,non-additive
+dialogue_narration_ratio,Dialogue : narration ratio,structural,ratio,more dialogue relative to narration,Fraction of words inside double quotes.,quoted_words / word_count,false,non-additive
+adjective_density,Adjective density,structural,ratio,more adjective-heavy description,ADJ-tagged tokens as a fraction of all words.,adjective_count / word_count,false,non-additive
+adverb_density,Adverb density,structural,ratio,more adverb-heavy (a weak-prose tell),ADV-tagged tokens as a fraction of all words.,adverb_count / word_count,false,non-additive
+jaccard,Jaccard vocab overlap vs you,distinctive,ratio,more vocabulary overlap with you,"Shared-vocabulary fraction between an author and you, over content-word lemmas; computed dbt-side.",shared_terms / (size_a + size_b - shared_terms),false,non-additive

@@ -9,6 +9,12 @@ models:
         data_tests:
           - unique
           - not_null
+      - name: additivity
+        description: "Kimball additivity class. All 15 metrics are non-additive (ratios/averages/indices); value + zscore must never be summed across rows."
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['additive', 'semi-additive', 'non-additive']
 
   - name: dim_author
     description: "One row per author, deduped from the work-grain seed (Option A)."
@@ -44,3 +50,70 @@ models:
           - accepted_values:
               arguments:
                 values: ['short-story', 'novella', 'novel']
+
+  - name: fact_style_measurement
+    description: "Central fact: one row per work x metric series (3,213). Carries value + z-score, FKs to dim_work, dim_author, and dim_metric."
+    columns:
+      - name: measurement_key
+        description: "Surrogate hash of (work_id, metric_name). PK + grain guard."
+        data_tests:
+          - unique          # fails if (work, series) ever duplicates -> grain broken
+          - not_null
+      - name: work_key
+        description: "FK to dim_work."
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_work')
+                field: work_key
+      - name: author_key
+        description: "FK to dim_author, carried direct off dim_work for star-schema slicing."
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_author')
+                field: author_key
+      - name: metric_key
+        description: "FK to dim_metric (concept grain; one key spans a multivalue concept's child series)."
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_metric')
+                field: metric_key
+
+  - name: fact_vocab_overlap
+    description: "Author-pair fact (9): you (author_key_a) vs each other author (author_key_b), with Jaccard vocabulary overlap."
+    columns:
+      - name: overlap_key
+        description: "Surrogate hash of (author_key_a, author_key_b). PK + grain guard."
+        data_tests:
+          - unique
+          - not_null
+      - name: author_key_a
+        description: "FK to dim_author -- you (the is_self side)."
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_author')
+                field: author_key
+      - name: author_key_b
+        description: "FK to dim_author -- the other author. Unique = exactly one pair per other author."
+        data_tests:
+          - unique
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_author')
+                field: author_key
+      - name: jaccard
+        description: "|A∩B| / |A∪B|. A proper fraction, so must sit in [0, 1]."
+        data_tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                max_value: 1
+                inclusive: true

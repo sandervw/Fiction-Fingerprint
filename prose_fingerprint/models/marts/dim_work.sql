@@ -1,7 +1,5 @@
--- One row per work (51). The catalog (seed_authors) is the spine; word_count is a
--- measured enrichment joined in. LEFT JOIN so a catalogued work that never got
--- measured surfaces with a null word_count (caught by a not_null test) instead of
--- silently dropping out. author_key matches dim_author (same hash input) -> FK.
+-- One row per work. seed_authors is the spine; LEFT JOIN word_count from stg_works
+-- so an unmeasured work surfaces with a null word_count instead of dropping out.
 select
     {{ dbt_utils.generate_surrogate_key(['work_id']) }} as work_key,
     {{ dbt_utils.generate_surrogate_key(['author']) }}  as author_key,  -- FK -> dim_author

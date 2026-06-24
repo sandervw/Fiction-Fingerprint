@@ -1,7 +1,5 @@
--- One row per author, derived from the work-grain seed (Option A: dedup in dbt,
--- not by hand-shaping the CSV). GROUP BY every attribute so any author whose works
--- DISAGREE on tradition/era would split into duplicate author_keys; a uniqueness
--- test on author_key catches that loudly rather than silently picking a winner.
+-- One row per author, deduped from the work-grain seed via GROUP BY on every
+-- attribute, so conflicting author rows split into duplicate keys and trip the test.
 select
     {{ dbt_utils.generate_surrogate_key(['author']) }} as author_key,
     author as name,
