@@ -113,3 +113,11 @@ Same concept from BI, just expressed as code
 ## Macros
 
 Like a User Defined Function in sql server, except they aren't artifacts created on a DB - they are translated into sql at compile time
+
+## Tests
+
+run using `dbt test`
+
+Two kinds:
+- Tests in _marts.yml are generic assertions on column/model (not_null, unique, etc)
+- Singular tests in `tests/` - for mroe specific assertions; one sql file; if it returns rows, the test fails

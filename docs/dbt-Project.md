@@ -2,7 +2,7 @@
 
 A 3-week dbt Core project that models stylometric measurements of studied authors (Wagner, Peake, Eddison, Vance, Clark Ashton Smith) against your own prose, served as a 15-metric comparison dashboard.
 
-**Design constraint:** built locally, _portable to Fabric_, not _built in Fabric_. The swap to the `dbt-fabric` Warehouse adapter later should be a `profiles.yml`.
+**Design constraint:** built locally, _portable to Fabric_. The swap to the `dbt-fabric` Warehouse adapter later should be a `profiles.yml`.
 
 ---
 
@@ -22,29 +22,29 @@ A 3-week dbt Core project that models stylometric measurements of studied author
 - **dbt Core:** the part you're here to learn. Everything below.
 - **BI:** see §6.
 
-> **Keep all messy text/regex/list work in Python.** This is both good architecture _and_ the #1 portability rule — Fabric's T-SQL warehouse surface won't have DuckDB's string/list/regex niceties. dbt SQL stays joins, aggregations, and window functions that exist in both engines.
+> **Keep all messy text/regex/list work in Python.** This is both good architecture _and_ the #1 portability rule — Fabric's T-SQL warehouse surface won't have DuckDB's string/list/regex niceties.
 
 ### 1.1 Extractor, as built
 
 Modules under `extract/` (each ≤300 lines, full type hints):
 
-| Module            | Job                                                            |
-| ----------------- | ------------------------------------------------------------- |
-| `extract.py`      | orchestration: manifest → clean → parse → land                |
-| `cleaning.py`     | markdown → plain prose (regex only; keeps prose punctuation)  |
-| `stylometrics.py` | the 14 per-work metric functions                              |
-| `lexicons.py`     | tunable tables (function words, archaic list, punctuation)    |
-| `vocab.py`        | metric 15's vocabulary emitter (content-word lemmas)          |
-| `loaders.py`      | DuckDB landing: row shapes + writing the three `raw` tables    |
+| Module            | Job                                                          |
+| ----------------- | ------------------------------------------------------------ |
+| `extract.py`      | orchestration: manifest → clean → parse → land               |
+| `cleaning.py`     | markdown → plain prose (regex only; keeps prose punctuation) |
+| `stylometrics.py` | the 14 per-work metric functions                             |
+| `lexicons.py`     | tunable tables (function words, archaic list, punctuation)   |
+| `vocab.py`        | metric 15's vocabulary emitter (content-word lemmas)         |
+| `loaders.py`      | DuckDB landing: row shapes + writing the three `raw` tables  |
 
 **Metric contract:** each per-work metric is `(doc: Doc) -> dict[str, float]`. The driver flattens that dict to tidy rows, so a multi-value metric (function words, punctuation, sentence type) becomes N rows; its keys use `prefix_subkey` (`funcword_the`, `punct_semicolon`, `senttype_complex`). A "word" is a spaCy `is_alpha` token, the shared denominator throughout.
 
 **Raw landing tables** (one parse per work feeds all three):
 
-| Table                  | Grain         | Columns                      |
-| ---------------------- | ------------- | ---------------------------- |
-| `raw.raw_works`        | work          | `work_id`, `word_count`      |
-| `raw.raw_measurements` | work × metric | `work_id`, `metric`, `value` |
+| Table                  | Grain         | Columns                         |
+| ---------------------- | ------------- | ------------------------------- |
+| `raw.raw_works`        | work          | `work_id`, `word_count`         |
+| `raw.raw_measurements` | work × metric | `work_id`, `metric`, `value`    |
 | `raw.raw_vocab`        | work × term   | `work_id`, `term`, `term_count` |
 
 Labels (title, author, tradition, era, is_self) stay in `seed_authors.csv` and arrive on the dbt side as seeds; `prose_type` is derived in `dim_work` from `word_count`. Corpus: 51 works (24 self + 27 others), ~1.97M words.
@@ -61,8 +61,8 @@ The primary fact is deliberately **tall and narrow** — one row per work per me
 | ----------------------------------------- | ------------------ | --------------------------------------------------------------- |
 | `dim_author`                              | one row per author | `author_key`, `name`, `tradition`, `era`, `is_self`             |
 | `dim_work`                                | one row per work   | `work_key`, `author_key`, `title`, `year`, `word_count`, `type` |
-| `dim_metric`                              | one row per metric | `metric_key`, `metric_name`, `display_name`, `category`, `unit`, `higher_means`, `description`, `formula`, `is_multivalue` |
-| `fact_style_measurement` _(primary)_      | work × metric      | `work_key`, `author_key`, `metric_key`, `value`, `zscore`      |
+| `dim_metric`                              | one row per metric | `metric_key`, `metric_name`, `display_name`, etc                |
+| `fact_style_measurement` _(primary)_      | work × metric      | `work_key`, `author_key`, `metric_key`, `value`, `zscore`       |
 | `fact_vocab_overlap` _(secondary)_        | author pair        | `author_key_a`, `author_key_b`, `jaccard`, `shared_terms`       |
 | `fact_sentence_length_bins` _(secondary)_ | work × bin         | `work_key`, `length_bin`, `sentence_count`                      |
 
@@ -72,23 +72,23 @@ The primary fact is deliberately **tall and narrow** — one row per work per me
 
 ## 3. The 15 Metrics (final set)
 
-| #   | Metric                       | Category    | Summary                                                            |
-| --- | ---------------------------- | ----------- | ------------------------------------------------------------------ |
-| 1   | Mean word length             | lexical     | Average characters per word; denser diction runs longer.           |
-| 2   | Yule's K                     | lexical     | Vocabulary richness; higher = more repetition (poorer); length-stable. |
-| 3   | % archaic/rare words         | lexical     | Proportion matching an archaic/rare-word list (CAS, Eddison).      |
+| #   | Metric                       | Category    | Summary                                                                    |
+| --- | ---------------------------- | ----------- | -------------------------------------------------------------------------- |
+| 1   | Mean word length             | lexical     | Average characters per word; denser diction runs longer.                   |
+| 2   | Yule's K                     | lexical     | Vocabulary richness; higher = more repetition (poorer); length-stable.     |
+| 3   | % archaic/rare words         | lexical     | Proportion matching an archaic/rare-word list (CAS, Eddison).              |
 | 4   | Honoré's R                   | lexical     | Richness from hapax proportion; higher = richer vocabulary; length-robust. |
-| 5   | Function-word frequency      | lexical     | Rates of "the, of, and"; classic hard-to-fake fingerprint.         |
-| 6   | Mean sentence length         | syntactic   | Average words per sentence; pacing proxy.                          |
-| 7   | Sentence-length stdev        | syntactic   | Variation in sentence length; rhythm "burstiness" (Peake).         |
-| 8   | Mean parse-tree depth        | syntactic   | Average grammatical nesting depth from dependency parse.           |
-| 9   | Sentence-type mix            | syntactic   | Proportion of simple, compound, and complex sentences.             |
-| 10  | Punctuation frequency        | mechanical  | Rates of all marks (semicolons, dashes, colons, commas).           |
-| 11  | Contraction rate             | mechanical  | Frequency of contractions ("don't"); deeply ingrained habit.       |
-| 12  | Dialogue : narration ratio   | structural  | Share of quoted speech versus narration (Vance high, Eddison low). |
-| 13  | Adjective density            | structural  | Adjectives as a fraction of all words; descriptive heaviness.      |
-| 14  | Adverb density               | structural  | Adverbs as a fraction of all words; a "weak prose" tell.           |
-| 15  | Jaccard vocab overlap vs you | distinctive | Shared-vocabulary fraction between an author and you.              |
+| 5   | Function-word frequency      | lexical     | Rates of "the, of, and"; classic hard-to-fake fingerprint.                 |
+| 6   | Mean sentence length         | syntactic   | Average words per sentence; pacing proxy.                                  |
+| 7   | Sentence-length stdev        | syntactic   | Variation in sentence length; rhythm "burstiness" (Peake).                 |
+| 8   | Mean parse-tree depth        | syntactic   | Average grammatical nesting depth from dependency parse.                   |
+| 9   | Sentence-type mix            | syntactic   | Proportion of simple, compound, and complex sentences.                     |
+| 10  | Punctuation frequency        | mechanical  | Rates of all marks (semicolons, dashes, colons, commas).                   |
+| 11  | Contraction rate             | mechanical  | Frequency of contractions ("don't"); deeply ingrained habit.               |
+| 12  | Dialogue : narration ratio   | structural  | Share of quoted speech versus narration (Vance high, Eddison low).         |
+| 13  | Adjective density            | structural  | Adjectives as a fraction of all words; descriptive heaviness.              |
+| 14  | Adverb density               | structural  | Adverbs as a fraction of all words; a "weak prose" tell.                   |
+| 15  | Jaccard vocab overlap vs you | distinctive | Shared-vocabulary fraction between an author and you.                      |
 
 ### 3.1 Metric 15 in detail: Jaccard vocabulary overlap
 
@@ -98,10 +98,10 @@ Metric 15 is the odd one out: it compares two authors, so its grain and implemen
 
 | work_id            | term     | term_count |
 | ------------------ | -------- | ---------- |
-| rhialto-marvellous | sorcerer |         14 |
-| rhialto-marvellous | journey  |          5 |
-| the-glass-sky      | sorcerer |          9 |
-| the-glass-sky      | glass    |         22 |
+| rhialto-marvellous | sorcerer | 14         |
+| rhialto-marvellous | journey  | 5          |
+| the-glass-sky      | sorcerer | 9          |
+| the-glass-sky      | glass    | 22         |
 
 **dbt computes the overlap** in `int_vocab_jaccard.sql`. It pools each author's works into one distinct-term vocabulary (`stg_vocab → dim_work → dim_author`, then `distinct term`), then measures every other author against you. Intersection is a join on `term`; union is `|A| + |B| - |A∩B|`. Pure joins and counts, so it ports to Fabric. As built: 10 authors (1 self + 9 others) → 9 output rows, and a LEFT join keeps a zero-overlap author at jaccard=0 rather than dropping it.
 
@@ -161,9 +161,11 @@ prose_fingerprint/
 │       ├── fact_style_measurement.sql
 │       ├── fact_vocab_overlap.sql
 │       ├── mart_author_fingerprint.sql       # WIDE: 15 metrics pivoted, for BI
-│       └── _marts.yml           # tests + exposure
-└── macros/
-    └── zscore.sql               # normalize a metric across the corpus
+│       └── _marts.yml           # generic tests (exposure: week 3)
+├── macros/
+│   └── zscore.sql               # normalize a metric across the corpus
+└── tests/
+    └── assert_work_has_all_metric_concepts.sql   # singular: 14 concepts/work
 ```
 
 **Materializations:** `staging` → views; `marts` → tables. Skip `incremental` — your corpus is static; note _why_ you'd use it (append-only event data) so you understand the tradeoff.
@@ -172,15 +174,15 @@ prose_fingerprint/
 
 ## 5. dbt Concepts This Hits (your learning checklist)
 
-- [ ] `sources` + `staging` convention (raw → `stg_`)
-- [ ] `ref` / `source` DAG and `dbt docs generate` → **lineage graph** (you like these)
-- [ ] **Seeds** — `dim_metric` and author metadata as version-controlled CSVs (textbook use case)
-- [ ] **Generic tests** — `not_null`, `unique`, `accepted_values`, `relationships` (author↔work FK)
-- [ ] **Singular/custom test** — assert every work has exactly 15 metrics; assert values in range
-- [ ] **Macros + Jinja** — the `zscore` macro applied across metrics; a pivot for the wide mart
-- [ ] **Packages** — `dbt_utils` for `pivot` and `generate_surrogate_key` (also the portability win, §7)
+- [x] `sources` + `staging` convention (raw → `stg_`)
+- [x] `ref` / `source` DAG and `dbt docs generate` → **lineage graph** (you like these)
+- [x] **Seeds** — `dim_metric` and author metadata as version-controlled CSVs (textbook use case)
+- [x] **Generic tests** — `not_null`, `unique`, `accepted_values`, `relationships` (author↔work FK)
+- [x] **Singular/custom test** — every work carries all 14 per-work concepts; values range-tested
+- [x] **Macros + Jinja** — the `zscore` macro applied across metrics (pivot for the wide mart: week 3)
+- [x] **Packages** — `dbt_utils` for `pivot` and `generate_surrogate_key` (also the portability win, §7)
 - [ ] **Exposures** — declare the dashboard so it shows in lineage
-- [ ] **Materializations** — view vs table, and reasoning about incremental
+- [x] **Materializations** — view vs table, and reasoning about incremental
 
 **Example: the z-score macro** (the "aha" moment for Jinja + cross-db SQL)
 
@@ -225,7 +227,7 @@ Lean **Evidence.dev** — it's the analytics-engineering BI idiom and pairs nati
 
 ## 8. Three-Week Plan (evenings/weekends realistic)
 
-### Week 1 — Environment + Extract/Load
+### Week 1 — Environment + Extract/Load ✓ complete
 
 - Install `dbt-core` + `dbt-duckdb` + `dbt_utils`; `dbt init prose_fingerprint`; `dbt debug` green.
 - Python extractor: segmentation, tokenization, dialogue detection, 14 per-work metrics + Jaccard vocabulary.
@@ -233,10 +235,10 @@ Lean **Evidence.dev** — it's the analytics-engineering BI idiom and pairs nati
 - Seeds in (`seed_authors`, `seed_metrics`); `stg_*` views compile; first `dbt run`.
 - **Done when:** raw data lands and staging models build clean.
 
-### Week 2 — Model + Test
+### Week 2 — Model + Test ✓ complete (2026-06-25)
 
 - Build `dim_*` and `fact_*` (star schema); `int_measurements_normalized` (z-scores via macro); `int_vocab_jaccard`.
-- Add tests: FK `relationships`, `not_null`, the custom "15 metrics per work" + range tests.
+- Add tests: FK `relationships`, `not_null`, the singular completeness test (every work carries all 14 per-work concepts) + range tests.
 - `dbt docs generate` → study the lineage graph.
 - **Done when:** marts are trustworthy and every test passes.
 
