@@ -235,7 +235,7 @@ Lean **Evidence.dev** — it's the analytics-engineering BI idiom and pairs nati
 - Seeds in (`seed_authors`, `seed_metrics`); `stg_*` views compile; first `dbt run`.
 - **Done when:** raw data lands and staging models build clean.
 
-### Week 2 — Model + Test ✓ complete (2026-06-25)
+### Week 2 — Model + Test ✓ complete
 
 - Build `dim_*` and `fact_*` (star schema); `int_measurements_normalized` (z-scores via macro); `int_vocab_jaccard`.
 - Add tests: FK `relationships`, `not_null`, the singular completeness test (every work carries all 14 per-work concepts) + range tests.

@@ -117,3 +117,19 @@ models:
                 min_value: 0
                 max_value: 1
                 inclusive: true
+
+  - name: mart_work_fingerprint
+    description: "Wide pivot of fact_style_measurement: one row per work, a z-score column per series (63)."
+    columns:
+      - name: work_key
+        description: "PK + grain guard (one row per work)."
+        data_tests:
+          - unique
+          - not_null
+      - name: author_key
+        description: "FK to dim_author; the handle for rolling works up to author."
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_author')
+                field: author_key
