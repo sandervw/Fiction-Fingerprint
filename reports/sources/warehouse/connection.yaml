@@ -1,0 +1,5 @@
+name: warehouse
+type: duckdb
+options:
+  # relative to this source dir → reaches the dbt project's warehouse
+  filename: ../../../prose_fingerprint/warehouse.duckdb
