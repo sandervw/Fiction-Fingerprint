@@ -121,3 +121,51 @@ run using `dbt test`
 Two kinds:
 - Tests in _marts.yml are generic assertions on column/model (not_null, unique, etc)
 - Singular tests in `tests/` - for mroe specific assertions; one sql file; if it returns rows, the test fails
+
+## evidence.dev
+
+Basically, PowerBI plus Astro
+
+Everything is written in a markdown file, and all joins/queries are hardcoded in sql (no dynamic joins)
+- dynamic filters are possible
+
+PowerBI → Evidence translation
+┌────────────────────┬───────────────────────────────────────┐
+│   PowerBI world    │            Evidence world             │
+├────────────────────┼───────────────────────────────────────┤
+│ .pbix canvas, drag │ .md files you type in a text editor   │
+│  visuals           │                                       │
+├────────────────────┼───────────────────────────────────────┤
+│ DAX measures, data │ Plain SQL queries against your        │
+│  model             │ warehouse                             │
+├────────────────────┼───────────────────────────────────────┤
+│ Click a visual,    │ Write a SQL block, then drop a        │
+│ bind fields        │ <BarChart> component below it         │
+├────────────────────┼───────────────────────────────────────┤
+│ Publish to PowerBI │ npm run build → static HTML site      │
+│  Service           │ (host anywhere, or run locally)       │
+├────────────────────┼───────────────────────────────────────┤
+│ Model lives in the │ Logic lives in Git, diffable like     │
+│  file              │ code                                  │
+└────────────────────┴───────────────────────────────────────┘
+
+Basic synax
+
+```sql authors
+select distinct author from mart_work_fingerprint
+```
+
+```sql author_lengths
+select author, mean_word_length from mart_work_fingerprint
+```
+
+<BarChart data={author_lengths} x=author y=mean_word_length />
+
+<Dropdown data={authors} name=picked value=author />
+
+```sql filtered
+select * from mart_work_fingerprint
+where author = '${inputs.picked.value}'
+```
+- ${inputs.picked.value} is the manual equivalent of PowerBI's cross-filtering.
+- one query can reference another's result with ${query_name}; build reusable base queries and filter them downstream

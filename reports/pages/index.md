@@ -1,56 +1,53 @@
 ---
-title: Welcome to Evidence
+title: Prose Fingerprint
+neverShowQueries: true
 ---
 
-<Details title='How to edit this page'>
+Stylometric measurements per work, shown as **z-scores** (standardized across the 51-work corpus: 0 = corpus average, ±1 = one standard deviation). Pick an author to filter.
 
-  This page can be found in your project at `/pages/index.md`. Make a change to the markdown file and save it to see the change take effect in your browser.
-</Details>
+```sql authors
+select distinct author
+from warehouse.mart_work_fingerprint
+order by author
+```
+```sql metrics
+select distinct metric_name
+from warehouse.dim_metric
+order by metric_name
+```
+<Grid cols=2>
+    <Dropdown data={authors} name=author value=author title="Author" defaultValue="%">
+    <DropdownOption value="%" valueLabel="All authors" />
+</Dropdown>
+    <Dropdown data={metrics} name=metric_name value=metric_name title="Metric" defaultValue="%">
+    <DropdownOption value="%" valueLabel="All metrics" />
+</Dropdown>
+</Grid>
 
-```sql categories
-  select
-      category
-  from needful_things.orders
-  group by category
+
+```sql works
+select
+    title,
+    author,
+    mean_word_length,
+    mean_sentence_length,
+    adjective_density,
+    yules_k
+from warehouse.mart_work_fingerprint
+where author like '${inputs.author.value}'
+order by author, title
 ```
 
-<Dropdown data={categories} name=category value=category>
-    <DropdownOption value="%" valueLabel="All Categories"/>
-</Dropdown>
+<DataTable data={works} rows=15>
+    <Column id=title />
+    <Column id=author />
+    <Column id=mean_word_length fmt=num2 />
+    <Column id=mean_sentence_length fmt=num2 />
+    <Column id=adjective_density fmt=num2 />
+    <Column id=yules_k fmt=num2 />
+</DataTable>
 
-<Dropdown name=year>
-    <DropdownOption value=% valueLabel="All Years"/>
-    <DropdownOption value=2019/>
-    <DropdownOption value=2020/>
-    <DropdownOption value=2021/>
-</Dropdown>
-
-```sql orders_by_category
-  select 
-      date_trunc('month', order_datetime) as month,
-      sum(sales) as sales_usd,
-      category
-  from needful_things.orders
-  where category like '${inputs.category.value}'
-  and date_part('year', order_datetime) like '${inputs.year.value}'
-  group by all
-  order by sales_usd desc
-```
-
-<BarChart
-    data={orders_by_category}
-    title="Sales by Month, {inputs.category.label}"
-    x=month
-    y=sales_usd
-    series=category
-/>
-
-## What's Next?
-- [Connect your data sources](settings)
-- Edit/add markdown files in the `pages` folder
-- Deploy your project with [Evidence Cloud](https://evidence.dev/cloud)
-
-## Get Support
-- Message us on [Slack](https://slack.evidence.dev/)
-- Read the [Docs](https://docs.evidence.dev/)
-- Open an issue on [Github](https://github.com/evidence-dev/evidence)
+<Grid cols=2>
+    <BarChart data={works} x=author y=mean_word_length />
+    <BarChart data={works} x=author y=yules_k />
+</Grid>
