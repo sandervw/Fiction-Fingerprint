@@ -3,72 +3,82 @@ title: Prose Fingerprint
 neverShowQueries: true
 ---
 
-Stylometric measurements per work, shown as **z-scores** (standardized across the 51-work corpus: 0 = corpus average, ±1 = one standard deviation). Pick an author to filter.
+How my prose compares to the authors in the measured corpus, (measured as **z-scores**). Positive means you do *more* of something than the typical work; negative, less.
 
-```sql authors
-select distinct author
-from warehouse.mart_work_fingerprint
-order by author
-```
-```sql metrics
-select distinct metric_name
-from warehouse.dim_metric
-order by metric_name
-```
-<Grid cols=2>
-    <Dropdown data={authors} name=author value=author title="Author" defaultValue="%">
-      <DropdownOption value="%" valueLabel="All authors" />
-    </Dropdown>
-    <Dropdown data={metrics} name=metric_name value=metric_name title="Metric" multiple=true />
-</Grid>
+## Vocabulary Overlap
 
-```sql works
-select
-    title,
-    author,
-    mean_word_length,
-    mean_sentence_length,
-    adjective_density,
-    yules_k
-from warehouse.mart_work_fingerprint
-where author like '${inputs.author.value}'
-order by author, title
-```
+Jaccard overlap of vocabulary. Higher = more shared words.
 
-```sql author_metrics
+```sql kinship
 select
     da.name as author,
-    dm.metric_name,
-    avg(fsm.value) as value,
-    avg(fsm.zscore) as zscore
-from warehouse.fact_style_measurement fsm
-inner join warehouse.dim_metric dm
-  on fsm.metric_key = dm.metric_key
-inner join warehouse.dim_author da
-  on fsm.author_key = da.author_key
-where author like '${inputs.author.value}'
-  and dm.metric_name in ${inputs.metric_name.value}
-group by author, dm.metric_name
-order by zscore, value
+    fvo.jaccard
+from warehouse.fact_vocab_overlap fvo
+join warehouse.dim_author da
+    on fvo.author_key_b = da.author_key
+order by fvo.jaccard desc
 ```
 
-<DataTable data={works} rows=15>
-    <Column id=title />
-    <Column id=author />
-    <Column id=mean_word_length fmt=num2 />
-    <Column id=mean_sentence_length fmt=num2 />
-    <Column id=adjective_density fmt=num2 />
-    <Column id=yules_k fmt=num2 />
+<BarChart
+    data={kinship}
+    x=author
+    y=jaccard
+    swapXY=true
+    yFmt=pct2
+/>
+
+## Stylometric Fingerprint
+
+```sql comparison
+select
+    dm.display_name,
+    dm.metric_name,
+    case when da.is_self then 'You' else da.name end as who,
+    avg(fsm.zscore) as zscore
+from warehouse.fact_style_measurement fsm
+join warehouse.dim_metric dm
+    on fsm.metric_key = dm.metric_key
+join warehouse.dim_author da
+    on fsm.author_key = da.author_key
+where dm.is_multivalue = false
+    and dm.metric_name <> 'jaccard'
+    and (da.is_self or da.name = '${inputs.author.value}')
+group by dm.display_name, dm.metric_name, who
+order by dm.metric_name, who
+```
+
+Each metric* as a z-score: how far above (+) or below (–) the corpus average you and the chosen author sit. 0 = average.
+
+<Dropdown data={kinship} name=author value=author title="Compare against" defaultValue="Karl Edward Wagner" />
+
+<BarChart
+    data={comparison}
+    x=display_name
+    y=zscore
+    series=who
+    type=grouped
+    swapXY=true
+    yFmt=num2
+/>
+
+```sql metric_defs
+select
+    dm.display_name,
+    dm.description
+from warehouse.dim_metric dm
+where dm.is_multivalue = false
+    and dm.metric_name <> 'jaccard'
+order by dm.display_name
+```
+
+<Accordion>
+    <AccordionItem title="*Definitions">
+
+<DataTable data={metric_defs} rows=11>
+    <Column id=display_name title="Metric" />
+    <Column id=description title="Definition" wrap=true />
 </DataTable>
 
-<DataTable data={author_metrics} rows=15>
-    <Column id=author />
-    <Column id=metric_name />
-    <Column id=value />
-    <Column id=zscore fmt=num2 />
-</DataTable>
+    </AccordionItem>
+</Accordion>
 
-<Grid cols=2>
-    <BarChart data={works} x=author y=mean_word_length yFmt=num2 />
-    <BarChart data={works} x=author y=yules_k yFmt=num2 />
-</Grid>

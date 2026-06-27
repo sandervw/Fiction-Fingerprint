@@ -1,0 +1,1 @@
+select * from main.fact_vocab_overlap
