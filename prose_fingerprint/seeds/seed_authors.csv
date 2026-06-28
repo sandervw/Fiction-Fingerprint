@@ -1,52 +1,126 @@
 work_id,title,author,tradition,era,is_self,path
-25000-sugar-lumps,"25,000 Sugar Lumps",Sander VanWilligen,speculative fiction,contemporary,true,"corpus/my-stories/25,000-Sugar-Lumps.md"
-abe-no-seimei,Abe no Seimei,Sander VanWilligen,speculative fiction,contemporary,true,corpus/my-stories/Abe-no-Seimei.md
-amidst-the-mist-and-dew,Amidst the Mist and Dew,Sander VanWilligen,speculative fiction,contemporary,true,corpus/my-stories/Amidst-the-Mist-and-Dew.md
-barndance,Barndance,Sander VanWilligen,speculative fiction,contemporary,true,corpus/my-stories/Barndance.md
-beyond-the-flue,Beyond the Flue,Sander VanWilligen,speculative fiction,contemporary,true,corpus/my-stories/Beyond-the-Flue.md
-deadmans-pile,Deadman's Pile,Sander VanWilligen,speculative fiction,contemporary,true,corpus/my-stories/Deadmans-Pile.md
-dreamreel,Dreamreel,Sander VanWilligen,speculative fiction,contemporary,true,corpus/my-stories/Dreamreel.md
-epicurus-the-mouse,Epicurus the Mouse,Sander VanWilligen,speculative fiction,contemporary,true,corpus/my-stories/Epicurus-the-Mouse.md
-fill-the-dark-with-silence,Fill the Dark with Silence,Sander VanWilligen,speculative fiction,contemporary,true,corpus/my-stories/Fill-the-Dark-with-Silence.md
-fish-on-the-rotisserie,Fish on the Rotisserie,Sander VanWilligen,speculative fiction,contemporary,true,corpus/my-stories/Fish-on-the-Rotisserie.md
-footsteps-in-red,Footsteps in Red,Sander VanWilligen,speculative fiction,contemporary,true,corpus/my-stories/Footsteps-in-Red
-lake-of-the-lost,Lake of the Lost,Sander VanWilligen,speculative fiction,contemporary,true,corpus/my-stories/Lake-of-the-Lost.md
-lumpy-bumpy,Lumpy Bumpy,Sander VanWilligen,speculative fiction,contemporary,true,corpus/my-stories/Lumpy-Bumpy.md
-message-from-a-chosen-one,Message from a Chosen One,Sander VanWilligen,speculative fiction,contemporary,true,corpus/my-stories/Message-from-a-Chosen-One.md
-murphy-ginger-and-the-magic-cupboard,Murphy Ginger and the Magic Cupboard,Sander VanWilligen,speculative fiction,contemporary,true,corpus/my-stories/Murphy-Ginger-and-the-Magic-Cupboard.md
-nicholas-sing,Nicholas Sing,Sander VanWilligen,speculative fiction,contemporary,true,corpus/my-stories/Nicholas-Sing.md
-nuclear-elves,Nuclear Elves,Sander VanWilligen,speculative fiction,contemporary,true,corpus/my-stories/Nuclear-Elves.md
-orientation-day,Orientation Day,Sander VanWilligen,speculative fiction,contemporary,true,corpus/my-stories/Orientation-Day.md
-queen-of-the-hill,Queen of the Hill,Sander VanWilligen,speculative fiction,contemporary,true,corpus/my-stories/Queen-of-the-Hill.md
-roundworm-woods,Roundworm Woods,Sander VanWilligen,speculative fiction,contemporary,true,corpus/my-stories/Roundworm-Woods.md
-the-glass-sky,The Glass Sky,Sander VanWilligen,speculative fiction,contemporary,true,corpus/my-stories/The-Glass-Sky
-the-sun-wound,The Sun Wound,Sander VanWilligen,speculative fiction,contemporary,true,corpus/my-stories/The-Sun-Wound.md
-the-taxidermist,The Taxidermist,Sander VanWilligen,speculative fiction,contemporary,true,corpus/my-stories/The-Taxidermist.md
-the-thankful-skull,The Thankful Skull,Sander VanWilligen,speculative fiction,contemporary,true,corpus/my-stories/The-Thankful-Skull.md
-wagner-bloodstone,Bloodstone,Karl Edward Wagner,sword & sorcery / dark fantasy,1970s-80s,false,corpus/other-authors/Wagner-Bloodstone.md
-wagner-dark-crusade,Dark Crusade,Karl Edward Wagner,sword & sorcery / dark fantasy,1970s-80s,false,corpus/other-authors/Wagner-Dark-Crusade.md
-wagner-darkness-weaves,Darkness Weaves,Karl Edward Wagner,sword & sorcery / dark fantasy,1970s-80s,false,corpus/other-authors/Wagner-Darkness-Weaves.md
-wagner-death-angels-shadow,Death Angel's Shadow,Karl Edward Wagner,sword & sorcery / dark fantasy,1970s-80s,false,corpus/other-authors/Wagner-Death-Angels-Shadow.md
-wagner-night-winds,Night Winds,Karl Edward Wagner,sword & sorcery / dark fantasy,1970s-80s,false,corpus/other-authors/Wagner-Night-Winds.md
-gormenghast,Gormenghast,Mervyn Peake,gothic fantasy,1946-1959,false,corpus/other-authors/Gormenghast.md
-titus-groan,Titus Groan,Mervyn Peake,gothic fantasy,1946-1959,false,corpus/other-authors/Titus-Groan.md
-the-worm-ouroboros,The Worm Ouroboros,E. R. Eddison,heroic high fantasy,1922,false,corpus/other-authors/The-Worm-Ouroboros.md
-cugels-saga,Cugel's Saga,Jack Vance,science fantasy (Dying Earth),1950s-80s,false,corpus/other-authors/Cugel's-Saga.md
-rhialto-the-marvellous,Rhialto the Marvellous,Jack Vance,science fantasy (Dying Earth),1950s-80s,false,corpus/other-authors/Rhialto-the-Marvellous.md
-the-dying-earth,The Dying Earth,Jack Vance,science fantasy (Dying Earth),1950s-80s,false,corpus/other-authors/The-Dying-Earth.md
-the-eyes-of-the-overworld,The Eyes of the Overworld,Jack Vance,science fantasy (Dying Earth),1950s-80s,false,corpus/other-authors/The-Eyes-of-the-Overworld.md
-necromancy-in-naat,Necromancy in Naat,Clark Ashton Smith,weird fiction,1930s,false,corpus/other-authors/Necromancy-in-Naat.md
-the-abominations-of-yondo,The Abominations of Yondo,Clark Ashton Smith,weird fiction,1930s,false,corpus/other-authors/the-abominations-of-yondo.md
-the-beast-of-averoigne,The Beast of Averoigne,Clark Ashton Smith,weird fiction,1930s,false,corpus/other-authors/The-Beast-of-Averoigne.md
-the-black-abbot-of-puthuum,The Black Abbot of Puthuum,Clark Ashton Smith,weird fiction,1930s,false,corpus/other-authors/The-Black-Abbot-of-Puthuum.md
-the-charnel-god,The Charnel God,Clark Ashton Smith,weird fiction,1930s,false,corpus/other-authors/The-Charnel-God.md
-the-colossus-of-ylourgne,The Colossus of Ylourgne,Clark Ashton Smith,weird fiction,1930s,false,corpus/other-authors/the-colossus-of-ylourgne.md
-the-enchantress-of-sylaire,The Enchantress of Sylaire,Clark Ashton Smith,weird fiction,1930s,false,corpus/other-authors/the-enchantress-of-sylaire.md
-the-tomb-spawn,The Tomb-Spawn,Clark Ashton Smith,weird fiction,1930s,false,corpus/other-authors/The-Tomb-Spawn.md
-the-dark-age,The Dark Age,Clark Ashton Smith,weird fiction,1930s,false,corpus/other-authors/the-dark-age.md
-beyond-the-black-river,Beyond the Black River,Robert E. Howard,sword & sorcery (Conan),1930s,false,corpus/other-authors/Beyond-the-Black-River.md
-gods-of-the-north,Gods of the North,Robert E. Howard,sword & sorcery (Conan),1930s,false,corpus/other-authors/Gods-of-the-North.md
-queen-of-the-black-coast,Queen of the Black Coast,Robert E. Howard,sword & sorcery (Conan),1930s,false,corpus/other-authors/Queen-of-the-Black-Coast.md
-the-odyssey,The Odyssey,Homer (trans.),classical epic,8th c. BCE,false,corpus/other-authors/The-Odyssey.md
-seneca-epistles,Moral Epistles,Seneca (trans.),Stoic philosophy,1st c. CE,false,corpus/other-authors/Seneca-Epistles-Complete.md
-the-nibelungenlied,The Nibelungenlied,Anonymous (trans.),medieval heroic epic,~1200 CE,false,corpus/other-authors/The Nibelungenlied.md
+25-000-sugar-lumps,"25,000 Sugar Lumps",Sander VanWilligen,speculative fiction,contemporary,true,"corpus/Sander-VanWilligen/25,000-Sugar-Lumps.md"
+abe-no-seimei,Abe no Seimei,Sander VanWilligen,speculative fiction,contemporary,true,corpus/Sander-VanWilligen/Abe-no-Seimei.md
+amidst-the-mist-and-dew,Amidst the Mist and Dew,Sander VanWilligen,speculative fiction,contemporary,true,corpus/Sander-VanWilligen/Amidst-the-Mist-and-Dew.md
+barndance,Barndance,Sander VanWilligen,speculative fiction,contemporary,true,corpus/Sander-VanWilligen/Barndance.md
+beyond-the-flue,Beyond the Flue,Sander VanWilligen,speculative fiction,contemporary,true,corpus/Sander-VanWilligen/Beyond-the-Flue.md
+deadmans-pile,The Oldvaults Under Deadman's Pile,Sander VanWilligen,speculative fiction,contemporary,true,corpus/Sander-VanWilligen/Deadmans-Pile.md
+dreamreel,Dreamreel,Sander VanWilligen,speculative fiction,contemporary,true,corpus/Sander-VanWilligen/Dreamreel.md
+epicurus-the-mouse,Epicurus the Mouse,Sander VanWilligen,speculative fiction,contemporary,true,corpus/Sander-VanWilligen/Epicurus-the-Mouse.md
+fill-the-dark-with-silence,Fill the Dark with Silence,Sander VanWilligen,speculative fiction,contemporary,true,corpus/Sander-VanWilligen/Fill-the-Dark-with-Silence.md
+fish-on-the-rotisserie,Fish on the Rotisserie,Sander VanWilligen,speculative fiction,contemporary,true,corpus/Sander-VanWilligen/Fish-on-the-Rotisserie.md
+footsteps-in-red,Footsteps in Red,Sander VanWilligen,speculative fiction,contemporary,true,corpus/Sander-VanWilligen/Footsteps-in-Red.md
+lake-of-the-lost,The Lake of the Lost,Sander VanWilligen,speculative fiction,contemporary,true,corpus/Sander-VanWilligen/Lake-of-the-Lost.md
+lumpy-bumpy,Lumpy Bumpy,Sander VanWilligen,speculative fiction,contemporary,true,corpus/Sander-VanWilligen/Lumpy-Bumpy.md
+message-from-a-chosen-one,Message from a Chosen One,Sander VanWilligen,speculative fiction,contemporary,true,corpus/Sander-VanWilligen/Message-from-a-Chosen-One.md
+murphy-ginger-and-the-magic-cupboard,Murphy Ginger and the Magic Cupboard,Sander VanWilligen,speculative fiction,contemporary,true,corpus/Sander-VanWilligen/Murphy-Ginger-and-the-Magic-Cupboard.md
+nicholas-sing,"Nicholas, Sing 'The Rite of Spring'",Sander VanWilligen,speculative fiction,contemporary,true,corpus/Sander-VanWilligen/Nicholas-Sing.md
+nuclear-elves,Nuclear Elves,Sander VanWilligen,speculative fiction,contemporary,true,corpus/Sander-VanWilligen/Nuclear-Elves.md
+orientation-day,Orientation Day,Sander VanWilligen,speculative fiction,contemporary,true,corpus/Sander-VanWilligen/Orientation-Day.md
+queen-of-the-hill,Queen of the Hill,Sander VanWilligen,speculative fiction,contemporary,true,corpus/Sander-VanWilligen/Queen-of-the-Hill.md
+roundworm-woods,Roundworm Woods,Sander VanWilligen,speculative fiction,contemporary,true,corpus/Sander-VanWilligen/Roundworm-Woods.md
+the-cck,The Cracked Cup Knight,Sander VanWilligen,speculative fiction,contemporary,true,corpus/Sander-VanWilligen/The-CCK.md
+the-glass-sky,The Glass Sky,Sander VanWilligen,speculative fiction,contemporary,true,corpus/Sander-VanWilligen/The-Glass-Sky.md
+the-sun-wound,The Sun Wound,Sander VanWilligen,speculative fiction,contemporary,true,corpus/Sander-VanWilligen/The-Sun-Wound.md
+the-taxidermist,The Taxidermist,Sander VanWilligen,speculative fiction,contemporary,true,corpus/Sander-VanWilligen/The-Taxidermist.md
+the-thankful-skull,The Thankful Skull,Sander VanWilligen,speculative fiction,contemporary,true,corpus/Sander-VanWilligen/The-Thankful-Skull.md
+wraithcotte,Wraithcotte,Sander VanWilligen,speculative fiction,contemporary,true,corpus/Sander-VanWilligen/Wraithcotte.md
+a-night-in-malneant,A Night in Malnéant,Clark Ashton Smith,weird fiction,1930s,false,corpus/Clark-Ashton-Smith/a-night-in-malneant.md
+a-rendezvous-in-averoigne,A Rendezvous in Averoigne,Clark Ashton Smith,weird fiction,1930s,false,corpus/Clark-Ashton-Smith/a-rendezvous-in-averoigne.md
+a-vintage-from-atlantis,A Vintage from Atlantis,Clark Ashton Smith,weird fiction,1930s,false,corpus/Clark-Ashton-Smith/a-vintage-from-atlantis.md
+a-voyage-to-sfanomoe,A Voyage to Sfanomoë,Clark Ashton Smith,weird fiction,1930s,false,corpus/Clark-Ashton-Smith/a-voyage-to-sfanomoe.md
+an-offering-to-the-moon,An Offering to the Moon,Clark Ashton Smith,weird fiction,1930s,false,corpus/Clark-Ashton-Smith/an-offering-to-the-moon.md
+morthylla,Morthylla,Clark Ashton Smith,weird fiction,1930s,false,corpus/Clark-Ashton-Smith/morthylla.md
+mother-of-toads,Mother of Toads,Clark Ashton Smith,weird fiction,1930s,false,corpus/Clark-Ashton-Smith/mother-of-toads.md
+necromancy-in-naat,Necromancy in Naat,Clark Ashton Smith,weird fiction,1930s,false,corpus/Clark-Ashton-Smith/necromancy-in-naat.md
+symposium-of-the-gorgon,Symposium of the Gorgon,Clark Ashton Smith,weird fiction,1930s,false,corpus/Clark-Ashton-Smith/symposium-of-the-gorgon.md
+the-abominations-of-yondo,The Abominations of Yondo,Clark Ashton Smith,weird fiction,1930s,false,corpus/Clark-Ashton-Smith/the-abominations-of-yondo.md
+the-beast-of-averoigne,The Beast of Averoigne,Clark Ashton Smith,weird fiction,1930s,false,corpus/Clark-Ashton-Smith/the-beast-of-averoigne.md
+the-black-abbot-of-puthuum,The Black Abbot of Puthuum,Clark Ashton Smith,weird fiction,1930s,false,corpus/Clark-Ashton-Smith/the-black-abbot-of-puthuum.md
+the-charnel-god,The Charnel God,Clark Ashton Smith,weird fiction,1930s,false,corpus/Clark-Ashton-Smith/the-charnel-god.md
+the-colossus-of-ylourgne,The Colossus of Ylourgne,Clark Ashton Smith,weird fiction,1930s,false,corpus/Clark-Ashton-Smith/the-colossus-of-ylourgne.md
+the-coming-of-the-white-worm,The Coming of the White Worm,Clark Ashton Smith,weird fiction,1930s,false,corpus/Clark-Ashton-Smith/the-coming-of-the-white-worm.md
+the-dark-age,The Dark Age,Clark Ashton Smith,weird fiction,1930s,false,corpus/Clark-Ashton-Smith/the-dark-age.md
+the-dark-eidolon,The Dark Eidolon,Clark Ashton Smith,weird fiction,1930s,false,corpus/Clark-Ashton-Smith/the-dark-eidolon.md
+the-death-of-ilalotha,The Death of Ilalotha,Clark Ashton Smith,weird fiction,1930s,false,corpus/Clark-Ashton-Smith/the-death-of-ilalotha.md
+the-death-of-malygris,The Death of Malygris,Clark Ashton Smith,weird fiction,1930s,false,corpus/Clark-Ashton-Smith/the-death-of-malygris.md
+the-demon-of-the-flower,The Demon of the Flower,Clark Ashton Smith,weird fiction,1930s,false,corpus/Clark-Ashton-Smith/the-demon-of-the-flower.md
+the-disinterment-of-venus,The Disinterment of Venus,Clark Ashton Smith,weird fiction,1930s,false,corpus/Clark-Ashton-Smith/the-disinterment-of-venus.md
+the-door-to-saturn,The Door to Saturn,Clark Ashton Smith,weird fiction,1930s,false,corpus/Clark-Ashton-Smith/the-door-to-saturn.md
+the-double-shadow,The Double Shadow,Clark Ashton Smith,weird fiction,1930s,false,corpus/Clark-Ashton-Smith/the-double-shadow.md
+the-dweller-in-the-gulf,The Dweller in the Gulf,Clark Ashton Smith,weird fiction,1930s,false,corpus/Clark-Ashton-Smith/the-dweller-in-the-gulf.md
+the-empire-of-the-necromancers,The Empire of the Necromancers,Clark Ashton Smith,weird fiction,1930s,false,corpus/Clark-Ashton-Smith/the-empire-of-the-necromancers.md
+the-enchantress-of-sylaire,The Enchantress of Sylaire,Clark Ashton Smith,weird fiction,1930s,false,corpus/Clark-Ashton-Smith/the-enchantress-of-sylaire.md
+the-end-of-the-story,The End of the Story,Clark Ashton Smith,weird fiction,1930s,false,corpus/Clark-Ashton-Smith/the-end-of-the-story.md
+the-epiphany-of-death,The Epiphany of Death,Clark Ashton Smith,weird fiction,1930s,false,corpus/Clark-Ashton-Smith/the-epiphany-of-death.md
+the-flower-women,The Flower-Women,Clark Ashton Smith,weird fiction,1930s,false,corpus/Clark-Ashton-Smith/the-flower-women.md
+the-garden-of-adompha,The Garden of Adompha,Clark Ashton Smith,weird fiction,1930s,false,corpus/Clark-Ashton-Smith/the-garden-of-adompha.md
+the-holiness-of-azedarac,The Holiness of Azédarac,Clark Ashton Smith,weird fiction,1930s,false,corpus/Clark-Ashton-Smith/the-holiness-of-azedarac.md
+the-ice-demon,The Ice-Demon,Clark Ashton Smith,weird fiction,1930s,false,corpus/Clark-Ashton-Smith/the-ice-demon.md
+the-invisible-city,The Invisible City,Clark Ashton Smith,weird fiction,1930s,false,corpus/Clark-Ashton-Smith/the-invisible-city.md
+the-isle-of-the-torturers,The Isle of the Torturers,Clark Ashton Smith,weird fiction,1930s,false,corpus/Clark-Ashton-Smith/the-isle-of-the-torturers.md
+the-last-hieroglyph,The Last Hieroglyph,Clark Ashton Smith,weird fiction,1930s,false,corpus/Clark-Ashton-Smith/the-last-hieroglyph.md
+the-last-incantation,The Last Incantation,Clark Ashton Smith,weird fiction,1930s,false,corpus/Clark-Ashton-Smith/the-last-incantation.md
+the-maker-of-gargoyles,The Maker of Gargoyles,Clark Ashton Smith,weird fiction,1930s,false,corpus/Clark-Ashton-Smith/the-maker-of-gargoyles.md
+the-mandrakes,The Mandrakes,Clark Ashton Smith,weird fiction,1930s,false,corpus/Clark-Ashton-Smith/the-mandrakes.md
+the-master-of-the-crabs,The Master of the Crabs,Clark Ashton Smith,weird fiction,1930s,false,corpus/Clark-Ashton-Smith/the-master-of-the-crabs.md
+the-maze-of-maal-dweb,The Maze of Maâl Dweb,Clark Ashton Smith,weird fiction,1930s,false,corpus/Clark-Ashton-Smith/the-maze-of-maal-dweb.md
+the-monster-of-the-prophecy,The Monster of the Prophecy,Clark Ashton Smith,weird fiction,1930s,false,corpus/Clark-Ashton-Smith/the-monster-of-the-prophecy.md
+the-root-of-ampoi,The Root of Ampoi,Clark Ashton Smith,weird fiction,1930s,false,corpus/Clark-Ashton-Smith/the-root-of-ampoi.md
+the-satyr,The Satyr,Clark Ashton Smith,weird fiction,1930s,false,corpus/Clark-Ashton-Smith/the-satyr.md
+the-seven-geases,The Seven Geases,Clark Ashton Smith,weird fiction,1930s,false,corpus/Clark-Ashton-Smith/the-seven-geases.md
+the-tale-of-satampra-zeiros,The Tale of Satampra Zeiros,Clark Ashton Smith,weird fiction,1930s,false,corpus/Clark-Ashton-Smith/the-tale-of-satampra-zeiros.md
+the-testament-of-athammaus,The Testament of Athammaus,Clark Ashton Smith,weird fiction,1930s,false,corpus/Clark-Ashton-Smith/the-testament-of-athammaus.md
+the-theft-of-the-thirty-nine-girdles,The Theft of the Thirty-Nine Girdles,Clark Ashton Smith,weird fiction,1930s,false,corpus/Clark-Ashton-Smith/the-theft-of-the-thirty-nine-girdles.md
+the-tomb-spawn,The Tomb-Spawn,Clark Ashton Smith,weird fiction,1930s,false,corpus/Clark-Ashton-Smith/the-tomb-spawn.md
+the-uncharted-isle,The Uncharted Isle,Clark Ashton Smith,weird fiction,1930s,false,corpus/Clark-Ashton-Smith/the-uncharted-isle.md
+the-vaults-of-yoh-vombis,The Vaults of Yoh-Vombis,Clark Ashton Smith,weird fiction,1930s,false,corpus/Clark-Ashton-Smith/the-vaults-of-yoh-vombis.md
+the-venus-of-azombeii,The Venus of Azombeii,Clark Ashton Smith,weird fiction,1930s,false,corpus/Clark-Ashton-Smith/the-venus-of-azombeii.md
+the-voyage-of-king-euvoran,The Voyage of King Euvoran,Clark Ashton Smith,weird fiction,1930s,false,corpus/Clark-Ashton-Smith/the-voyage-of-king-euvoran.md
+the-weaver-in-the-vault,The Weaver in the Vault,Clark Ashton Smith,weird fiction,1930s,false,corpus/Clark-Ashton-Smith/the-weaver-in-the-vault.md
+the-weird-of-avoosl-wuthoqquan,The Weird of Avoosl Wuthoqquan,Clark Ashton Smith,weird fiction,1930s,false,corpus/Clark-Ashton-Smith/the-weird-of-avoosl-wuthoqquan.md
+the-white-sybil,The White Sybil,Clark Ashton Smith,weird fiction,1930s,false,corpus/Clark-Ashton-Smith/the-white-sybil.md
+the-willow-landscape,The Willow Landscape,Clark Ashton Smith,weird fiction,1930s,false,corpus/Clark-Ashton-Smith/the-willow-landscape.md
+the-witchcraft-of-ulua,The Witchcraft of Ulua,Clark Ashton Smith,weird fiction,1930s,false,corpus/Clark-Ashton-Smith/the-witchcraft-of-ulua.md
+ubbo-sathla,Ubbo-Sathla,Clark Ashton Smith,weird fiction,1930s,false,corpus/Clark-Ashton-Smith/ubbo-sathla.md
+vulthoom,Vulthoom,Clark Ashton Smith,weird fiction,1930s,false,corpus/Clark-Ashton-Smith/vulthoom.md
+xeethra,Xeethra,Clark Ashton Smith,weird fiction,1930s,false,corpus/Clark-Ashton-Smith/xeethra.md
+the-worm-ouroboros,The Worm Ouroboros,E. R. Eddison,heroic high fantasy,1922,false,corpus/E-R-Eddison/the-worm-ouroboros.md
+cugels-saga,Cugel's Saga,Jack Vance,science fantasy (Dying Earth),1950s-80s,false,corpus/Jack-Vance/cugel's-saga.md
+rhialto-the-marvellous,Rhialto the Marvellous,Jack Vance,science fantasy (Dying Earth),1950s-80s,false,corpus/Jack-Vance/rhialto-the-marvellous.md
+the-dying-earth,The Dying Earth,Jack Vance,science fantasy (Dying Earth),1950s-80s,false,corpus/Jack-Vance/the-dying-earth.md
+the-eyes-of-the-overworld,The Eyes of the Overworld,Jack Vance,science fantasy (Dying Earth),1950s-80s,false,corpus/Jack-Vance/the-eyes-of-the-overworld.md
+bloodstone,Bloodstone,Karl Edward Wagner,sword & sorcery / dark fantasy,1970s-80s,false,corpus/Karl-Edward-Wagner/bloodstone.md
+cold-light,Cold Light,Karl Edward Wagner,sword & sorcery / dark fantasy,1970s-80s,false,corpus/Karl-Edward-Wagner/cold-light.md
+dark-crusade,Dark Crusade,Karl Edward Wagner,sword & sorcery / dark fantasy,1970s-80s,false,corpus/Karl-Edward-Wagner/dark-crusade.md
+darkness-weaves,Darkness Weaves,Karl Edward Wagner,sword & sorcery / dark fantasy,1970s-80s,false,corpus/Karl-Edward-Wagner/darkness-weaves.md
+lynortis-reprise,Lynortis Reprise,Karl Edward Wagner,sword & sorcery / dark fantasy,1970s-80s,false,corpus/Karl-Edward-Wagner/lynortis-reprise.md
+mirage,Mirage,Karl Edward Wagner,sword & sorcery / dark fantasy,1970s-80s,false,corpus/Karl-Edward-Wagner/mirage.md
+ravens-eyrie,Raven's Eyrie,Karl Edward Wagner,sword & sorcery / dark fantasy,1970s-80s,false,corpus/Karl-Edward-Wagner/ravens-eyrie.md
+reflections-for-the-winter-of-my-soul,Reflections for the Winter of My Soul,Karl Edward Wagner,sword & sorcery / dark fantasy,1970s-80s,false,corpus/Karl-Edward-Wagner/reflections-for-the-winter-of-my-soul.md
+sing-a-last-song-of-valdese,Sing a Last Song of Valdese,Karl Edward Wagner,sword & sorcery / dark fantasy,1970s-80s,false,corpus/Karl-Edward-Wagner/sing-a-last-song-of-valdese.md
+the-dark-muse,The Dark Muse,Karl Edward Wagner,sword & sorcery / dark fantasy,1970s-80s,false,corpus/Karl-Edward-Wagner/the-dark-muse.md
+two-suns-setting,Two Suns Setting,Karl Edward Wagner,sword & sorcery / dark fantasy,1970s-80s,false,corpus/Karl-Edward-Wagner/two-suns-setting.md
+undertow,Undertow,Karl Edward Wagner,sword & sorcery / dark fantasy,1970s-80s,false,corpus/Karl-Edward-Wagner/undertow.md
+gormenghast,Gormenghast (Gormenghast #2),Mervyn Peake,gothic fantasy,1946-1959,false,corpus/Mervyn-Peake/gormenghast.md
+titus-groan,Titus Groan (Gormenghast #1),Mervyn Peake,gothic fantasy,1946-1959,false,corpus/Mervyn-Peake/titus-groan.md
+a-witch-shall-be-born,A Witch Shall Be Born,Robert E. Howard,sword & sorcery (Conan),1930s,false,corpus/Robert-E-Howard/a-witch-shall-be-born.md
+beyond-the-black-river,Beyond the Black River,Robert E. Howard,sword & sorcery (Conan),1930s,false,corpus/Robert-E-Howard/beyond-the-black-river.md
+gods-of-the-north,Gods of the North,Robert E. Howard,sword & sorcery (Conan),1930s,false,corpus/Robert-E-Howard/gods-of-the-north.md
+jewels-of-gwahlur,Jewels of Gwahlur,Robert E. Howard,sword & sorcery (Conan),1930s,false,corpus/Robert-E-Howard/jewels-of-gwahlur.md
+queen-of-the-black-coast,Queen of the Black Coast,Robert E. Howard,sword & sorcery (Conan),1930s,false,corpus/Robert-E-Howard/queen-of-the-black-coast.md
+red-nails,Red Nails,Robert E. Howard,sword & sorcery (Conan),1930s,false,corpus/Robert-E-Howard/red-nails.md
+shadows-in-the-moonlight,Shadows in the Moonlight,Robert E. Howard,sword & sorcery (Conan),1930s,false,corpus/Robert-E-Howard/shadows-in-the-moonlight.md
+shadows-in-zamboula,Shadows in Zamboula,Robert E. Howard,sword & sorcery (Conan),1930s,false,corpus/Robert-E-Howard/shadows-in-zamboula.md
+the-devil-in-iron,The Devil in Iron,Robert E. Howard,sword & sorcery (Conan),1930s,false,corpus/Robert-E-Howard/the-devil-in-iron.md
+the-hour-of-the-dragon,The Hour of the Dragon,Robert E. Howard,sword & sorcery (Conan),1930s,false,corpus/Robert-E-Howard/the-hour-of-the-dragon.md
+the-people-of-the-black-circle,The People of the Black Circle,Robert E. Howard,sword & sorcery (Conan),1930s,false,corpus/Robert-E-Howard/the-people-of-the-black-circle.md
+the-boats-of-the-glen-carrig,"The Boats of the ""Glen Carrig""",William Hope Hodgson,weird / cosmic horror,1900s-10s,false,corpus/William-Hope-Hodgson/the-boats-of-the-glen-carrig.md
+the-gateway-of-the-monster,The Gateway of the Monster,William Hope Hodgson,weird / cosmic horror,1900s-10s,false,corpus/William-Hope-Hodgson/the-gateway-of-the-monster.md
+the-horse-of-the-invisible,The Horse of the Invisible,William Hope Hodgson,weird / cosmic horror,1900s-10s,false,corpus/William-Hope-Hodgson/the-horse-of-the-invisible.md
+the-house-among-the-laurels,The House Among the Laurels,William Hope Hodgson,weird / cosmic horror,1900s-10s,false,corpus/William-Hope-Hodgson/the-house-among-the-laurels.md
+the-house-on-the-borderland,The House on the Borderland,William Hope Hodgson,weird / cosmic horror,1900s-10s,false,corpus/William-Hope-Hodgson/the-house-on-the-borderland.md
+the-night-land,The Night Land,William Hope Hodgson,weird / cosmic horror,1900s-10s,false,corpus/William-Hope-Hodgson/the-night-land.md
+the-searcher-of-the-end-house,The Searcher of the End House,William Hope Hodgson,weird / cosmic horror,1900s-10s,false,corpus/William-Hope-Hodgson/the-searcher-of-the-end-house.md
+the-thing-invisible,The Thing Invisible,William Hope Hodgson,weird / cosmic horror,1900s-10s,false,corpus/William-Hope-Hodgson/the-thing-invisible.md
+the-whistling-room,The Whistling Room,William Hope Hodgson,weird / cosmic horror,1900s-10s,false,corpus/William-Hope-Hodgson/the-whistling-room.md

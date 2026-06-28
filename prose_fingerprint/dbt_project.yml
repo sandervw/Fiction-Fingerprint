@@ -35,3 +35,9 @@ models:
       +materialized: view    # inspectable + testable; switch to ephemeral if we ever want a tidy warehouse
     marts:
       +materialized: table
+
+# Load seeds via INSERT, not dbt-duckdb's fast COPY-from-file, whose path is
+# resolved against the shell's CWD and breaks when run from inside the project.
+seeds:
+  prose_fingerprint:
+    +fast: false

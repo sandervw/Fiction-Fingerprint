@@ -87,7 +87,7 @@ class Work:
     """The bits of a corpus_manifest.csv row the extractor needs."""
 
     work_id: str
-    rel_path: str  # a .md file OR a folder of chapters, relative to repo root
+    rel_path: str  # path to the work's .md file, relative to repo root
 
 
 # --- Filesystem helpers ---------------------------------------------------
@@ -98,32 +98,8 @@ def find_repo_root() -> Path:
     return Path(__file__).resolve().parent.parent
 
 
-def chapter_sort_key(path: Path) -> tuple[int, str]:
-    """Sort chapter files by their number, so Chapter-2 precedes Chapter-10.
-
-    Plain alphabetical sorting would put "Chapter-10" before "Chapter-2"
-    (because '1' < '2' as text). We pull the integer out and sort on that.
-    """
-    match = re.search(r"Chapter-(\d+)", path.name)
-    number = int(match.group(1)) if match else 0
-    return (number, path.name)
-
-
 def load_work_text(source: Path) -> str:
-    """Return the full raw text of a work.
-
-    A work is either a single .md file or a folder of chapter .md files.
-    For a folder we read every chapter in numeric order and join them into
-    one string, so the whole work is measured as a single unit.
-    """
-    if source.is_dir():
-        chapters = sorted(source.glob("*.md"), key=chapter_sort_key)
-        parts: list[str] = []
-        for chapter in chapters:
-            with chapter.open(encoding="utf-8") as handle:
-                parts.append(handle.read())
-        return "\n\n".join(parts)
-
+    """Return the full raw text of a work (a single .md file)."""
     with source.open(encoding="utf-8") as handle:
         return handle.read()
 

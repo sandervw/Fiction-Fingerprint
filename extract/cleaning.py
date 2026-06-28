@@ -16,6 +16,16 @@ import re
 # Leading YAML frontmatter block: ---\n ... \n---\n at the very start of file.
 _FRONTMATTER = re.compile(r"\A---\n.*?\n---\n", re.DOTALL)
 
+# Source-attribution line on the raw public-domain dumps, e.g.
+# *Source: https://www.gutenberg.org/... Public domain.* - never prose.
+_SOURCE_LINE = re.compile(r"(?m)^[ \t]*\*{1,2}\s*Source:.*$")
+
+# Author byline: an emphasised, standalone name line at the very top (after an
+# optional title heading), e.g. *Clark Ashton Smith* or **by Jack Vance**. The
+# \A anchor keeps this from touching mid-prose emphasis or the self-stories
+# (whose frontmatter is already gone and whose body isn't an emphasised line).
+_LEADING_BYLINE = re.compile(r"\A(?:[ \t]*#[^\n]*\n)?\s*\*{1,2}[^*\n]+\*{1,2}[ \t]*\n")
+
 # Whole lines to delete entirely (heading / scene-break / horizontal rule).
 _HEADING_LINE = re.compile(r"(?m)^[ \t]*#{1,6}[ \t].*$")
 _RULE_LINE = re.compile(
@@ -44,6 +54,8 @@ def clean_markdown(raw: str) -> str:
     text = raw.replace("\r\n", "\n").replace("\r", "\n")
 
     text = _FRONTMATTER.sub("", text)
+    text = _SOURCE_LINE.sub("", text)
+    text = _LEADING_BYLINE.sub("", text)
     text = _HEADING_LINE.sub("", text)
     text = _RULE_LINE.sub("", text)
     text = _BLOCKQUOTE.sub("", text)
