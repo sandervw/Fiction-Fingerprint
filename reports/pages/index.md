@@ -3,7 +3,7 @@ title: Prose Fingerprint
 neverShowQueries: true
 ---
 
-How my prose compares to the authors in the measured corpus, (measured as **z-scores**). Positive means you do *more* of something than the typical work; negative, less.
+How my prose compares to the authors in the measured corpus, (measured as **z-scores**). Positive means I do *more* of something than the typical work; negative, less.
 
 ## Vocabulary Overlap
 
@@ -27,7 +27,7 @@ order by fvo.jaccard desc
     yFmt=pct2
 />
 
-## Stylometric Fingerprint
+## Stylometric* Likeness
 
 ```sql comparison
 select
@@ -47,7 +47,7 @@ group by dm.display_name, dm.metric_name, who
 order by dm.metric_name, who
 ```
 
-Each metric* as a z-score: how far above (+) or below (–) the corpus average you and the chosen author sit. 0 = average.
+Z-score distance above (+) or below (–) the corpus average: me vs. the chosen author.
 
 <Dropdown data={kinship} name=author value=author title="Compare against" defaultValue="Karl Edward Wagner" />
 

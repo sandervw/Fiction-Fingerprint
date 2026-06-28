@@ -10,7 +10,7 @@ mean_parse_tree_depth,Mean parse-tree depth,syntactic,levels,more grammatical ne
 sentence_type_mix,Sentence-type mix,syntactic,ratio,larger share of that sentence type,"Shares of simple, compound, and complex sentences (sum to 1).",count(type) / sentence_count,true,non-additive
 punctuation_frequency,Punctuation frequency,mechanical,ratio,heavier use of that mark,"Per-word rate of each punctuation group (commas, semicolons, dashes).",count(mark) / word_count,true,non-additive
 contraction_rate,Contraction rate,mechanical,ratio,more contractions (informal register),Contractions per word; excludes the possessive 's.,contractions / word_count,false,non-additive
-dialogue_narration_ratio,Dialogue : narration ratio,structural,ratio,more dialogue relative to narration,Fraction of words inside double quotes.,quoted_words / word_count,false,non-additive
+dialogue_narration_ratio,Dialogue : narration ratio,structural,ratio,more dialogue relative to narration,Fraction of words inside double quotes. Higher means more dialogue.,quoted_words / word_count,false,non-additive
 adjective_density,Adjective density,structural,ratio,more adjective-heavy description,ADJ-tagged tokens as a fraction of all words.,adjective_count / word_count,false,non-additive
 adverb_density,Adverb density,structural,ratio,more adverb-heavy (a weak-prose tell),ADV-tagged tokens as a fraction of all words.,adverb_count / word_count,false,non-additive
-jaccard,Jaccard vocab overlap vs you,distinctive,ratio,more vocabulary overlap with you,"Shared-vocabulary fraction between an author and you, over content-word lemmas; computed dbt-side.",shared_terms / (size_a + size_b - shared_terms),false,non-additive
+jaccard,Jaccard vocab overlap vs you,distinctive,ratio,more vocabulary overlap with you,"Shared-vocabulary fraction between an author and you, over content-word lemmas.",shared_terms / (size_a + size_b - shared_terms),false,non-additive

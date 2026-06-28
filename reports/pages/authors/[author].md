@@ -1,10 +1,10 @@
 ---
-title: Author Profile
+title: Author Summary
 ---
 
 # {params.author}
 
-```sql profile
+```sql summary
 select
     da.name,
     da.tradition,
@@ -18,16 +18,14 @@ where da.name = '${params.author}'
 group by da.name, da.tradition, da.era
 ```
 
-Writes in the **<Value data={profile} column=tradition/>** tradition · <Value data={profile} column=era/>.
+Writes in the **<Value data={summary} column=tradition/>** genre. Era: <Value data={summary} column=era/>.
 
 <Grid cols=2>
-    <BigValue data={profile} value=works title="Works in corpus" />
-    <BigValue data={profile} value=total_words title="Total words" fmt=num0 />
+    <BigValue data={summary} value=works title="Works in corpus" />
+    <BigValue data={summary} value=total_words title="Total words" fmt=num0 />
 </Grid>
 
-## Signature traits
-
-Average z-score on each metric, sorted by distance from the corpus norm. The top bars are what most define this author; right = more than average, left = less.
+## Signature Stylometrics*
 
 ```sql distinctive
 select
@@ -42,7 +40,7 @@ where da.name = '${params.author}'
     and dm.is_multivalue = false
     and dm.metric_name <> 'jaccard'
 group by dm.display_name
-order by abs(avg(fsm.zscore)) asc
+order by abs(avg(fsm.zscore)) desc
 ```
 
 <BarChart
@@ -52,12 +50,30 @@ order by abs(avg(fsm.zscore)) asc
     swapXY=true
     yFmt=num2
     sort=false
-    title="Distinctive metrics (z-score vs corpus)"
 />
 
-## Sentence construction
+```sql metric_defs
+select
+    dm.display_name,
+    dm.description
+from warehouse.dim_metric dm
+where dm.is_multivalue = false
+    and dm.metric_name <> 'jaccard'
+order by dm.display_name
+```
 
-How their sentences break down by type.
+<Accordion>
+    <AccordionItem title="*Definitions">
+
+<DataTable data={metric_defs} rows=11>
+    <Column id=display_name title="Metric" />
+    <Column id=description title="Definition" wrap=true />
+</DataTable>
+
+    </AccordionItem>
+</Accordion>
+
+## Sentence Breakdown
 
 ```sql sentence_types
 select
@@ -81,12 +97,9 @@ order by proportion desc
     swapXY=true
     yFmt=pct1
     sort=false
-    title="Sentence-type mix"
 />
 
-## Punctuation profile
-
-Which marks they over- or under-use versus the corpus (z-score; right = more).
+## Punctuation Preferences
 
 ```sql punctuation
 select
@@ -100,7 +113,7 @@ join warehouse.dim_author da
 where da.name = '${params.author}'
     and dm.metric_name = 'punctuation_frequency'
 group by fsm.metric_name
-order by zscore asc
+order by zscore desc
 ```
 
 <BarChart
@@ -110,12 +123,9 @@ order by zscore asc
     swapXY=true
     yFmt=num2
     sort=false
-    title="Punctuation (z-score vs corpus)"
 />
 
-## Function-word tells
-
-The function words that most set this author apart (top 12 by absolute z-score).
+## Function-word Loves/Hates
 
 ```sql function_words
 select word, zscore
@@ -134,7 +144,7 @@ from (
     order by abs(avg(fsm.zscore)) desc
     limit 12
 )
-order by abs(zscore) asc
+order by abs(zscore) desc
 ```
 
 <BarChart
@@ -144,7 +154,6 @@ order by abs(zscore) asc
     swapXY=true
     yFmt=num2
     sort=false
-    title="Distinctive function words (z-score)"
 />
 
 ## Works

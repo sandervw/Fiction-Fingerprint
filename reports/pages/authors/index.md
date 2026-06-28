@@ -1,8 +1,6 @@
 ---
-title: Author Profiles
+title: Author Summaries
 ---
-
-Pick an author to open their full stylometric profile.
 
 ```sql authors
 select
