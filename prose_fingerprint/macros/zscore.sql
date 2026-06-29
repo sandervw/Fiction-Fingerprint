@@ -6,7 +6,7 @@
 --
 --   z = (value - avg(value)) / stddev_pop(value)   , both windowed per metric
 --
--- stddev_pop (divide by N) is used on purpose: our 51 works ARE the entire
+-- stddev_pop (divide by N) is used on purpose: our 135 works ARE the entire
 -- corpus, not a random sample of some larger population, so the population
 -- standard deviation is the honest spread of THIS data.
 --
@@ -14,5 +14,15 @@
 -- divide-by-zero: that yields NULL instead of an error.
 {% macro zscore(value_col, partition_col) %}
   ({{ value_col }} - avg({{ value_col }}) over (partition by {{ partition_col }}))
-  / nullif(stddev_pop({{ value_col }}) over (partition by {{ partition_col }}), 0)
+  / nullif({{ stddev_pop_expr(value_col) }} over (partition by {{ partition_col }}), 0)
 {% endmacro %}
+
+
+-- Population stddev, dispatched per engine: DuckDB stddev_pop, T-SQL/Fabric stdevp.
+{% macro stddev_pop_expr(col) %}
+  {{ return(adapter.dispatch('stddev_pop_expr', 'prose_fingerprint')(col)) }}
+{% endmacro %}
+
+{% macro default__stddev_pop_expr(col) %}stddev_pop({{ col }}){% endmacro %}
+
+{% macro fabric__stddev_pop_expr(col) %}stdevp({{ col }}){% endmacro %}

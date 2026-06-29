@@ -1,6 +1,6 @@
 -- mart_style_long
 -- Report-serving OBT: fact_style_measurement denormalized against its dims, kept
--- LONG (one row per work x child series, 3,213). Pre-joins the dims and precomputes
+-- LONG (one row per work x child series, 8,505). Pre-joins the dims and precomputes
 -- series_label so Evidence pages select-and-filter without re-joining the star.
 -- The star schema stays the source of truth; this is the flat serving layer on top.
 

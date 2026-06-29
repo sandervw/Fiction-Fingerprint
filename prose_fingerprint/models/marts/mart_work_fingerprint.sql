@@ -19,7 +19,7 @@ with measured as (
         f.metric_name,
         f.zscore
     from {{ ref('fact_style_measurement') }} f
-    inner join {{ ref('dim_work') }}   w using (work_key)
+    inner join {{ ref('dim_work') }}   w on w.work_key = f.work_key
     inner join {{ ref('dim_author') }} a on a.author_key = f.author_key
 
 )
@@ -39,4 +39,4 @@ select
         quote_identifiers=true
     ) }}
 from measured
-group by 1, 2, 3, 4, 5
+group by work_key, work_id, title, author_key, author

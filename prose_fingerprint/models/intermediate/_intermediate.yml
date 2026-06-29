@@ -5,7 +5,7 @@ models:
     description: >
       Every measurement (work x metric series) with a per-metric z-score
       (population stddev, via the zscore macro). Grain: one row per work x
-      measured series (3,213 = 51 works x 63 series). metric_key is bridged
+      measured series (8,505 = 135 works x 63 series). metric_key is bridged
       from each child series to its concept row in dim_metric by prefix.
     columns:
       - name: metric_key

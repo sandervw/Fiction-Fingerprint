@@ -1,7 +1,7 @@
 -- int_measurements_normalized
 -- Adds a per-metric z-score to every measurement so metrics on different scales
 -- become comparable (the standardized "fingerprint" form).
--- Grain: one row per work x measured series (51 works x 63 = 3,213).
+-- Grain: one row per work x measured series (135 works x 63 = 8,505).
 -- The z-score window partitions by the CHILD metric_name, so each series gets its
 -- own mean/spread.
 

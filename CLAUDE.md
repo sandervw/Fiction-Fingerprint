@@ -10,14 +10,13 @@ A learning project for **dbt Core + DuckDB**. The domain (stylometric "fingerpri
 
 ## Implementation doc
 
-`docs/dbt-Project.md` is the working plan. Treat it as a **rough, LLM-written draft**: many specifics are likely wrong, and most of it can and will change as we build. Consult it for direction, not as ground truth.
+`docs/dbt-Project.md` documents the project's finished design: the dimensional model, the 15 metrics, the z-score macro, and the portability rules. Consult it as the reference.
 
 ## How we work
 
-- **Propose, then WAIT for an explicit go-ahead. Do NOT implement in the same turn you explain.** This is the #1 rule. When the user asks "what's next?", a question, or anything ambiguous, the answer is words only — explanation/options, zero file writes or commands. Only run a tool that changes things after the user clearly says go (e.g. "do it", "go ahead", "yes"). When unsure whether you have the green light, you don't — ask.
-- The user is here to learn; **you write most of the code**, but you are also **the documentation**. Before writing anything, explain what we're about to do and why, step by step, so the user never has to leave the editor to understand it.
-- **One step at a time.** Once approved, do exactly ONE discrete action (one command or one file), then STOP and wait for the user again. Never chain steps or implement a whole phase ahead, even when the plan lists several bullets together. Approval for one step is NOT approval for the next.
-- At any **design or tech choice, stop and lay out the options, then consult the user.** Don't pick silently.
+- The user is still learning, so **you are also the documentation**: explain what you're doing and why as you go, enough to follow without leaving the editor. No need to stop and wait for sign-off before each edit.
+- **Just build it.** Batch related steps when it makes sense, then summarize what changed and why. Don't gate every command or file behind a separate approval.
+- For a **significant or hard-to-reverse design/tech choice**, call out the options and your recommendation before committing to it. For small, reversible calls, pick a sensible default and note it.
 - **Never rely on memory for code/tech specs.** Check the local refs in `docs/reference/` first (`dbt-core.md`, `dbt-duckdb.md`, `duckdb.md`). If they don't cover it, fetch current docs (Context7 / official sources), then update the ref file. Keep these refs current.
 - **Be lean.** Fewest words possible in chat and in prose docs. No extended justification, no restating known facts, no exhaustive examples.
 - **Never stage or commit.** Don't run `git add`/`git commit` unless explicitly instructed; the user handles version control.

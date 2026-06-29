@@ -64,7 +64,7 @@ CREATE SCHEMA IF NOT EXISTS raw;
 CREATE TABLE works (work_id INTEGER, title VARCHAR, year INTEGER, words BIGINT);
 ```
 
-Portable types to prefer (exist in Fabric too): `INTEGER`, `BIGINT`, `DOUBLE`, `DECIMAL(p,s)`, `VARCHAR`, `BOOLEAN`, `DATE`. Avoid DuckDB-only types (`LIST`/`STRUCT`/`MAP`) in anything dbt models.
+Portable types (same syntax in DuckDB and Fabric): `INTEGER`, `BIGINT`, `DECIMAL(p,s)`, `VARCHAR`, `BOOLEAN`, `DATE`. Float types DIFFER: bare `DOUBLE` is invalid T-SQL (Fabric uses `float`, an 8-byte double, or `DOUBLE PRECISION`), and DuckDB `FLOAT` vs Fabric `float` aren't the same width. For floats use `{{ dbt.type_float() }}` (with our `duckdb__type_float` → `double` override) or just `DECIMAL(p,s)`, which is exact and identical across engines. Avoid DuckDB-only types (`LIST`/`STRUCT`/`MAP`) in dbt models.
 
 ### Window + aggregate functions (portable, use freely in dbt)
 
