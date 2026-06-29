@@ -90,6 +90,10 @@ cugels-saga,Cugel's Saga,Jack Vance,science fantasy (Dying Earth),1950s-80s,fals
 rhialto-the-marvellous,Rhialto the Marvellous,Jack Vance,science fantasy (Dying Earth),1950s-80s,false,corpus/Jack-Vance/rhialto-the-marvellous.md
 the-dying-earth,The Dying Earth,Jack Vance,science fantasy (Dying Earth),1950s-80s,false,corpus/Jack-Vance/the-dying-earth.md
 the-eyes-of-the-overworld,The Eyes of the Overworld,Jack Vance,science fantasy (Dying Earth),1950s-80s,false,corpus/Jack-Vance/the-eyes-of-the-overworld.md
+the-fellowship-of-the-ring,The Fellowship of the Ring,J. R. R. Tolkien,high fantasy,1937-1955,false,corpus/J-R-R-Tolkien/the-fellowship-of-the-ring.md
+the-hobbit,The Hobbit,J. R. R. Tolkien,high fantasy,1937-1955,false,corpus/J-R-R-Tolkien/the-hobbit.md
+the-return-of-the-king,The Return of the King,J. R. R. Tolkien,high fantasy,1937-1955,false,corpus/J-R-R-Tolkien/the-return-of-the-king.md
+the-two-towers,The Two Towers,J. R. R. Tolkien,high fantasy,1937-1955,false,corpus/J-R-R-Tolkien/the-two-towers.md
 bloodstone,Bloodstone,Karl Edward Wagner,sword & sorcery / dark fantasy,1970s-80s,false,corpus/Karl-Edward-Wagner/bloodstone.md
 cold-light,Cold Light,Karl Edward Wagner,sword & sorcery / dark fantasy,1970s-80s,false,corpus/Karl-Edward-Wagner/cold-light.md
 dark-crusade,Dark Crusade,Karl Edward Wagner,sword & sorcery / dark fantasy,1970s-80s,false,corpus/Karl-Edward-Wagner/dark-crusade.md
@@ -104,6 +108,12 @@ two-suns-setting,Two Suns Setting,Karl Edward Wagner,sword & sorcery / dark fant
 undertow,Undertow,Karl Edward Wagner,sword & sorcery / dark fantasy,1970s-80s,false,corpus/Karl-Edward-Wagner/undertow.md
 gormenghast,Gormenghast (Gormenghast #2),Mervyn Peake,gothic fantasy,1946-1959,false,corpus/Mervyn-Peake/gormenghast.md
 titus-groan,Titus Groan (Gormenghast #1),Mervyn Peake,gothic fantasy,1946-1959,false,corpus/Mervyn-Peake/titus-groan.md
+exile,Exile,R. A. Salvatore,heroic fantasy (Forgotten Realms),1988-present,false,corpus/R-A-Salvatore/exile.md
+homeland,Homeland,R. A. Salvatore,heroic fantasy (Forgotten Realms),1988-present,false,corpus/R-A-Salvatore/homeland.md
+sojourn,Sojourn,R. A. Salvatore,heroic fantasy (Forgotten Realms),1988-present,false,corpus/R-A-Salvatore/sojourn.md
+streams-of-silver,Streams of Silver,R. A. Salvatore,heroic fantasy (Forgotten Realms),1988-present,false,corpus/R-A-Salvatore/streams-of-silver.md
+the-crystal-shard,The Crystal Shard,R. A. Salvatore,heroic fantasy (Forgotten Realms),1988-present,false,corpus/R-A-Salvatore/the-crystal-shard.md
+the-halflings-gem,The Halfling's Gem,R. A. Salvatore,heroic fantasy (Forgotten Realms),1988-present,false,corpus/R-A-Salvatore/the-halflings-gem.md
 a-witch-shall-be-born,A Witch Shall Be Born,Robert E. Howard,sword & sorcery (Conan),1930s,false,corpus/Robert-E-Howard/a-witch-shall-be-born.md
 beyond-the-black-river,Beyond the Black River,Robert E. Howard,sword & sorcery (Conan),1930s,false,corpus/Robert-E-Howard/beyond-the-black-river.md
 gods-of-the-north,Gods of the North,Robert E. Howard,sword & sorcery (Conan),1930s,false,corpus/Robert-E-Howard/gods-of-the-north.md

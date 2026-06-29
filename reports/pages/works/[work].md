@@ -25,31 +25,26 @@ By [<Value data={work} column=author/>](<Value data={work} column=author_link/>)
 This work's z-score minus the author's average across all their works.
 
 ```sql deviation
-with this_work as (
-    select author_key
-    from warehouse.dim_work
+with this_author as (
+    select distinct author_key
+    from warehouse.mart_style_long
     where work_id = '${params.work}'
 ),
 author_avg as (
-    select fsm.metric_key, avg(fsm.zscore) as author_z
-    from warehouse.fact_style_measurement fsm
-    where fsm.author_key = (select author_key from this_work)
-    group by fsm.metric_key
+    select metric_key, avg(zscore) as author_z
+    from warehouse.mart_style_long
+    where author_key = (select author_key from this_author)
+    group by metric_key
 )
 select
-    dm.display_name,
-    fsm.zscore - a.author_z as delta
-from warehouse.fact_style_measurement fsm
-join warehouse.dim_metric dm
-    on fsm.metric_key = dm.metric_key
-join warehouse.dim_work dw
-    on fsm.work_key = dw.work_key
+    msl.display_name,
+    msl.zscore - a.author_z as delta
+from warehouse.mart_style_long msl
 join author_avg a
-    on a.metric_key = fsm.metric_key
-where dw.work_id = '${params.work}'
-    and dm.is_multivalue = false
-    and dm.metric_name <> 'jaccard'
-order by abs(fsm.zscore - a.author_z) desc
+    on a.metric_key = msl.metric_key
+where msl.work_id = '${params.work}'
+    and msl.is_multivalue = false
+order by abs(msl.zscore - a.author_z) desc
 ```
 
 <BarChart
@@ -67,17 +62,12 @@ The work's z-scores against all measured works.
 
 ```sql signature
 select
-    dm.display_name,
-    fsm.zscore
-from warehouse.fact_style_measurement fsm
-join warehouse.dim_metric dm
-    on fsm.metric_key = dm.metric_key
-join warehouse.dim_work dw
-    on fsm.work_key = dw.work_key
-where dw.work_id = '${params.work}'
-    and dm.is_multivalue = false
-    and dm.metric_name <> 'jaccard'
-order by abs(fsm.zscore) desc
+    display_name,
+    zscore
+from warehouse.mart_style_long
+where work_id = '${params.work}'
+    and is_multivalue = false
+order by abs(zscore) desc
 ```
 
 <BarChart

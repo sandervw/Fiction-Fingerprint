@@ -1,0 +1,22 @@
+version: 2
+
+exposures:
+  - name: prose_fingerprint_dashboard
+    label: "Prose Fingerprint (Evidence)"
+    type: dashboard
+    maturity: medium          # still evolving; bump to high once stable
+    url: http://localhost:3000
+    description: >
+      Evidence.dev site (reports/) comparing the user's prose against studied
+      authors: vocabulary-overlap kinship, per-author signature traits, and
+      per-work fingerprints. Measurement charts read mart_style_long; dimensional
+      listings + metric definitions read the dims; kinship reads fact_vocab_overlap.
+    depends_on:
+      - ref('mart_style_long')      # measurement OBT behind every stylometric chart
+      - ref('fact_vocab_overlap')   # vocabulary-overlap kinship (author-pair grain)
+      - ref('dim_author')           # author listings + headers
+      - ref('dim_work')             # work listings + headers
+      - ref('dim_metric')           # metric-definition tables
+    owner:
+      name: Sander
+      email: samvanwilligen@gmail.com

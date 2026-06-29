@@ -3,6 +3,7 @@ version: 2
 sources:
   - name: raw                  # logical group → source('raw', <table>)
     schema: raw                # the DuckDB schema the Python extractor writes to
+    loader: "extract/ (Python + spaCy)"   # the pipeline that fills these tables; shows in lineage
     description: "Tidy tables landed by the standalone Python extractor (extract/)."
     tables:
       - name: raw_works        # grain: one row per work

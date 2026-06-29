@@ -29,18 +29,13 @@ Writes in the **<Value data={summary} column=tradition/>** genre. Era: <Value da
 
 ```sql distinctive
 select
-    dm.display_name,
-    avg(fsm.zscore) as zscore
-from warehouse.fact_style_measurement fsm
-join warehouse.dim_metric dm
-    on fsm.metric_key = dm.metric_key
-join warehouse.dim_author da
-    on fsm.author_key = da.author_key
-where da.name = '${params.author}'
-    and dm.is_multivalue = false
-    and dm.metric_name <> 'jaccard'
-group by dm.display_name
-order by abs(avg(fsm.zscore)) desc
+    display_name,
+    avg(zscore) as zscore
+from warehouse.mart_style_long
+where author = '${params.author}'
+    and is_multivalue = false
+group by display_name
+order by abs(avg(zscore)) desc
 ```
 
 <BarChart
@@ -77,16 +72,12 @@ order by dm.display_name
 
 ```sql sentence_types
 select
-    replace(fsm.metric_name, 'senttype_', '') as sentence_type,
-    avg(fsm.value) as proportion
-from warehouse.fact_style_measurement fsm
-join warehouse.dim_metric dm
-    on fsm.metric_key = dm.metric_key
-join warehouse.dim_author da
-    on fsm.author_key = da.author_key
-where da.name = '${params.author}'
-    and dm.metric_name = 'sentence_type_mix'
-group by fsm.metric_name
+    series_label as sentence_type,
+    avg(value) as proportion
+from warehouse.mart_style_long
+where author = '${params.author}'
+    and concept_name = 'sentence_type_mix'
+group by series_label
 order by proportion desc
 ```
 
@@ -103,16 +94,12 @@ order by proportion desc
 
 ```sql punctuation
 select
-    replace(fsm.metric_name, 'punct_', '') as mark,
-    avg(fsm.zscore) as zscore
-from warehouse.fact_style_measurement fsm
-join warehouse.dim_metric dm
-    on fsm.metric_key = dm.metric_key
-join warehouse.dim_author da
-    on fsm.author_key = da.author_key
-where da.name = '${params.author}'
-    and dm.metric_name = 'punctuation_frequency'
-group by fsm.metric_name
+    series_label as mark,
+    avg(zscore) as zscore
+from warehouse.mart_style_long
+where author = '${params.author}'
+    and concept_name = 'punctuation_frequency'
+group by series_label
 order by zscore desc
 ```
 
@@ -131,17 +118,13 @@ order by zscore desc
 select word, zscore
 from (
     select
-        replace(fsm.metric_name, 'funcword_', '') as word,
-        avg(fsm.zscore) as zscore
-    from warehouse.fact_style_measurement fsm
-    join warehouse.dim_metric dm
-        on fsm.metric_key = dm.metric_key
-    join warehouse.dim_author da
-        on fsm.author_key = da.author_key
-    where da.name = '${params.author}'
-        and dm.metric_name = 'function_word_frequency'
-    group by fsm.metric_name
-    order by abs(avg(fsm.zscore)) desc
+        series_label as word,
+        avg(zscore) as zscore
+    from warehouse.mart_style_long
+    where author = '${params.author}'
+        and concept_name = 'function_word_frequency'
+    group by series_label
+    order by abs(avg(zscore)) desc
     limit 12
 )
 order by abs(zscore) desc

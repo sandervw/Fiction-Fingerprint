@@ -1,16 +1,9 @@
 """Prose-fingerprint extractor - the "EL" of the pipeline.
 
-Per work: read the manifest, clean markdown to plain prose, parse it with
-spaCy (chunked so long novels don't blow past spaCy's memory limit), and land
-the results in DuckDB's `raw` schema. The row shapes and table-writing
-functions live in loaders.py, the per-work metrics in stylometrics.py, and the
-vocabulary emitter in vocab.py; this module is the orchestration tying them
-together.
-
-All labels (title, author, tradition...) live in corpus_manifest.csv and
-become dbt seeds, so the raw tables carry only what needs the text.
-
-Run from anywhere:  python extract/extract.py
+Per work: read the manifest, clean markdown, parse with spaCy (chunked for long
+novels), and land results in DuckDB's `raw` schema. Row shapes and table writers
+live in loaders.py, per-work metrics in stylometrics.py, vocab in vocab.py; this
+module orchestrates them. Labels live in the manifest as dbt seeds.
 """
 
 from __future__ import annotations
@@ -54,13 +47,11 @@ from stylometrics import (
 from vocab import vocab_terms
 
 
-# Parse long works in chunks below this many characters. Each chunk stays well
-# under spaCy's 1M-char limit, so peak parser memory stays modest (~1GB/100k).
+# Chunk size for parsing long works, kept under spaCy's 1M-char limit.
 MAX_CHUNK_CHARS = 100_000
 
-# Per-work metric functions currently implemented. Each takes the work Doc and
-# returns {metric_name: value}; the driver below flattens those into tidy
-# (work_id, metric, value) rows. Append new metrics here as they land.
+# Per-work metrics; each takes the work Doc and returns {metric_name: value}.
+# Append new metrics here as they land.
 METRIC_FUNCTIONS = (
     mean_word_length,          # 1
     yules_k,                   # 2
@@ -84,22 +75,22 @@ METRIC_FUNCTIONS = (
 
 @dataclass(frozen=True)
 class Work:
-    """The bits of a corpus_manifest.csv row the extractor needs."""
+    """The bits of a manifest row the extractor needs."""
 
     work_id: str
-    rel_path: str  # path to the work's .md file, relative to repo root
+    rel_path: str  # relative to repo root
 
 
 # --- Filesystem helpers ---------------------------------------------------
 
 
 def find_repo_root() -> Path:
-    """Repo root is one level up from this file (extract/extract.py)."""
+    """Repo root is one level up from this file."""
     return Path(__file__).resolve().parent.parent
 
 
 def load_work_text(source: Path) -> str:
-    """Return the full raw text of a work (a single .md file)."""
+    """Return the full raw text of a work."""
     with source.open(encoding="utf-8") as handle:
         return handle.read()
 
@@ -110,8 +101,8 @@ def load_work_text(source: Path) -> str:
 def chunk_text(text: str, max_chars: int) -> list[str]:
     """Split text into chunks below max_chars, breaking only on blank lines.
 
-    Breaking on paragraph boundaries means a sentence is never cut in half, so
-    the per-chunk parses reassemble (via Doc.from_docs) into a faithful whole.
+    Paragraph boundaries keep sentences whole, so per-chunk parses reassemble
+    faithfully via Doc.from_docs.
     """
     paragraphs = re.split(r"\n\s*\n", text)
     chunks: list[str] = []
@@ -124,18 +115,15 @@ def chunk_text(text: str, max_chars: int) -> list[str]:
             current = []
             size = 0
         current.append(paragraph)
-        size += len(paragraph) + 2  # +2 accounts for the "\n\n" rejoin
+        size += len(paragraph) + 2  # +2 for the "\n\n" rejoin
     if current:
         chunks.append("\n\n".join(current))
     return chunks
 
 
 def build_work_doc(nlp: Language, clean_text: str) -> Doc:
-    """Parse a (possibly long) work without hitting spaCy's memory wall.
-
-    Chunk the text under spaCy's limit, parse the chunks as a stream, then
-    stitch them back into one Doc. Every metric later reads off this one Doc.
-    """
+    """Parse a (possibly long) work into one Doc without hitting spaCy's
+    memory wall: chunk, parse as a stream, then stitch back together."""
     chunks = chunk_text(clean_text, MAX_CHUNK_CHARS)
     docs = list(nlp.pipe(chunks, batch_size=8))
     return Doc.from_docs(docs)
@@ -145,19 +133,15 @@ def build_work_doc(nlp: Language, clean_text: str) -> Doc:
 
 
 def read_manifest(manifest_path: Path) -> list[Work]:
-    """Parse corpus_manifest.csv into Work records (ignores unused columns)."""
+    """Parse the manifest CSV into Work records."""
     with manifest_path.open(encoding="utf-8", newline="") as handle:
         reader = csv.DictReader(handle)
         return [Work(work_id=row["work_id"], rel_path=row["path"]) for row in reader]
 
 
 def measure_metrics(work_id: str, doc: Doc) -> list[MeasurementRow]:
-    """Run every implemented metric over one work's Doc into tidy rows.
-
-    Each metric returns a {name: value} dict (one entry, or several for the
-    multi-value metrics). We flatten those into one MeasurementRow per
-    (work_id, metric, value).
-    """
+    """Run every metric over one work's Doc, flattening each {name: value}
+    dict into one MeasurementRow per (work_id, metric, value)."""
     rows: list[MeasurementRow] = []
     for metric_fn in METRIC_FUNCTIONS:
         for metric_name, value in metric_fn(doc).items():
@@ -166,23 +150,16 @@ def measure_metrics(work_id: str, doc: Doc) -> list[MeasurementRow]:
 
 
 def collect_vocab(work_id: str, doc: Doc) -> list[VocabRow]:
-    """Turn one work's content-lemma counts into tidy raw_vocab rows.
-
-    vocab_terms returns a {term: count} Counter; we emit one VocabRow per
-    distinct term. dbt later pools these up to the author for metric 15.
-    """
+    """Turn one work's content-lemma counts into raw_vocab rows, one per
+    distinct term. dbt later pools these up to the author for metric 15."""
     return [VocabRow(work_id, term, count) for term, count in vocab_terms(doc).items()]
 
 
 def measure_work(
     nlp: Language, work: Work, repo_root: Path
 ) -> tuple[WorkRow, list[MeasurementRow], list[VocabRow]]:
-    """Read, clean, and parse one work into its work row, measurements, and vocab.
-
-    The text is parsed once into a single work-level Doc; the word count, every
-    metric, and the vocabulary all read off that same Doc, so the heavy parse
-    happens once.
-    """
+    """Read, clean, and parse one work into its work row, measurements, and
+    vocab. Parsed once into one Doc that everything downstream reads off."""
     source = repo_root / work.rel_path
     clean = clean_markdown(load_work_text(source))
     doc = build_work_doc(nlp, clean)
@@ -200,14 +177,11 @@ def measure_work(
 
 def main() -> None:
     repo_root = find_repo_root()
-    # Single source of truth: the manifest IS the dbt seed. The extractor reads
-    # the same file dbt loads, so the two can never drift. Work paths inside it
-    # stay relative to repo_root, so they still resolve from here.
+    # The manifest IS the dbt seed, so extractor and dbt can never drift.
     manifest_path = repo_root / "prose_fingerprint" / "seeds" / "seed_authors.csv"
     db_path = repo_root / "prose_fingerprint" / "warehouse.duckdb"
 
-    # Disable NER: none of the 15 metrics use named entities, and skipping it
-    # speeds up the full parse. Chunking keeps each parse under the size limit.
+    # Disable NER: no metric uses named entities, and skipping it speeds parsing.
     nlp = spacy.load("en_core_web_sm", disable=["ner"])
     works = read_manifest(manifest_path)
 
@@ -221,12 +195,10 @@ def main() -> None:
         measurement_rows.extend(metric_rows)
         vocab_rows.extend(term_rows)
 
-    # One batch timestamp shared by all three tables. UTC, but stored naive
-    # (tzinfo stripped): DuckDB converts a tz-aware datetime to local time when
-    # it lands in a plain TIMESTAMP column, so we hand it the UTC wall-clock.
+    # One batch timestamp shared by all three tables. Stored as naive UTC
+    # wall-clock, since DuckDB shifts a tz-aware datetime to local time.
     loaded_at = datetime.now(timezone.utc).replace(tzinfo=None)
 
-    # duckdb connections are context managers, so the file is closed cleanly.
     with duckdb.connect(str(db_path)) as con:
         land_works(con, work_rows, loaded_at)
         land_measurements(con, measurement_rows, loaded_at)

@@ -1,21 +1,17 @@
 """DuckDB landing layer for the prose-fingerprint extractor.
 
-The persistence half of the EL: the typed row shapes for each `raw` table and
-the functions that (re)create those tables and insert the rows. Kept separate
-from extract.py so orchestration/parsing stays free of I/O concerns (and each
-module stays within the project's 300-line limit).
+The persistence half of the EL: typed row shapes for each `raw` table and the
+functions that (re)create those tables and insert the rows. Kept separate from
+extract.py so orchestration stays free of I/O.
 
 Tables, all in the `raw` schema:
   - raw_works         one row per work: (work_id, word_count)
-  - raw_measurements  tidy (work_id, metric, value): the 14 per-work metrics
-  - raw_vocab         tidy (work_id, term, term_count): each work's content-word
-                      lemmas + per-work frequency, feeding metric 15 (Jaccard,
-                      computed dbt-side)
+  - raw_measurements  tidy (work_id, metric, value): the per-work metrics
+  - raw_vocab         tidy (work_id, term, term_count): content-word lemmas
+                      feeding metric 15 (Jaccard, computed dbt-side)
 
-Every table also carries a `loaded_at` batch timestamp (UTC, passed in by the
-caller so all three share the exact same value). Because the extractor does a
-full CREATE OR REPLACE each run, this is a load/batch stamp - "when this
-snapshot landed" - not a preserved per-row first-insert date.
+Every table carries a `loaded_at` batch timestamp (UTC), shared by all three.
+Each run does a full CREATE OR REPLACE, so it stamps when the snapshot landed.
 """
 
 from __future__ import annotations
@@ -28,7 +24,7 @@ from duckdb import DuckDBPyConnection
 
 
 # --- Row shapes -----------------------------------------------------------
-# Plain data containers (no behaviour, just typed fields) mirroring each table.
+# Plain typed containers mirroring each table.
 
 
 @dataclass(frozen=True)
@@ -65,9 +61,7 @@ def land_works(
 ) -> None:
     """Create (or replace) raw.raw_works and insert the measured rows.
 
-    raw_works carries only what needs the text (word_count). Titles, authors
-    and other labels stay in the manifest and arrive on the dbt side as seeds.
-    CREATE OR REPLACE keeps re-runs idempotent; ? params keep inserts safe.
+    Carries only word_count; labels stay in the manifest as dbt seeds.
     """
     con.execute("CREATE SCHEMA IF NOT EXISTS raw")
     con.execute(
@@ -85,9 +79,8 @@ def land_measurements(
 ) -> None:
     """Create (or replace) raw.raw_measurements and insert the tidy rows.
 
-    Long/tidy shape - one row per (work, metric, value) - so adding a 16th
-    metric never changes the schema and it pivots cleanly for BI.
-    CREATE OR REPLACE keeps re-runs idempotent; ? params keep inserts safe.
+    Long shape - one row per (work, metric, value) - so new metrics never
+    change the schema.
     """
     con.execute("CREATE SCHEMA IF NOT EXISTS raw")
     con.execute(
@@ -106,11 +99,8 @@ def land_vocab(
 ) -> None:
     """Create (or replace) raw.raw_vocab and insert the tidy term rows.
 
-    Long/tidy shape - one row per (work, term) - holding each work's distinct
-    content-word lemmas and how often each occurs. dbt pools these up to the
-    author and computes metric 15's Jaccard overlap vs you as a portable
-    set-join (presence only; term_count is there for future frequency work).
-    CREATE OR REPLACE keeps re-runs idempotent; ? params keep inserts safe.
+    Long shape - one row per (work, term) - of each work's content-word lemmas
+    and counts. dbt pools these up to the author for metric 15's Jaccard overlap.
     """
     con.execute("CREATE SCHEMA IF NOT EXISTS raw")
     con.execute(

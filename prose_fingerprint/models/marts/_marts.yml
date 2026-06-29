@@ -133,3 +133,41 @@ models:
               arguments:
                 to: ref('dim_author')
                 field: author_key
+
+  - name: mart_style_long
+    description: "Report-serving OBT (3,213): fact_style_measurement denormalized against its dims, kept long, with a precomputed series_label. Feeds the Evidence pages so they don't re-join the star."
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:    # grain = work x child series
+          arguments:
+            combination_of_columns:
+              - work_key
+              - metric_name
+    columns:
+      - name: work_key
+        description: "FK to dim_work."
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_work')
+                field: work_key
+      - name: author_key
+        description: "FK to dim_author."
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_author')
+                field: author_key
+      - name: metric_key
+        description: "FK to dim_metric (concept grain)."
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_metric')
+                field: metric_key
+      - name: value
+        description: "Raw measured value. Non-additive."
+        data_tests:
+          - not_null

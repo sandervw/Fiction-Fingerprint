@@ -1,12 +1,8 @@
 """Stylometric measurement functions for the prose-fingerprint extractor.
 
-Contract: each per-work metric takes a parsed spaCy Doc and returns a
-{metric_name: value} dict. A dict (not a bare float) lets one metric emit
-several values - the extractor flattens these into tidy raw.raw_measurements
-rows (work_id, metric, value), so N values become N rows. Editable word/
-punctuation tables live in lexicons.py; metric 15 (jaccard) emits a
-vocabulary, not a measurement, so it lives in vocab.py. spaCy surfaces:
-docs/reference/spacy.md.
+Contract: each metric takes a parsed spaCy Doc and returns a {metric_name:
+value} dict; a dict lets one metric emit several values. Editable word/
+punctuation tables live in lexicons.py; metric 15 (jaccard) lives in vocab.py.
 """
 
 from __future__ import annotations
@@ -29,7 +25,6 @@ from lexicons import (
 
 
 # Dependency labels marking a subordinate clause -> the sentence is "complex".
-# Logic, not a tunable list, so it lives here. See docs/reference/spacy.md.
 SUBORDINATE_DEPS: frozenset[str] = frozenset(
     {"advcl", "ccomp", "xcomp", "acl", "relcl", "csubj"}
 )
@@ -39,19 +34,12 @@ SUBORDINATE_DEPS: frozenset[str] = frozenset(
 
 
 def _alpha_word_count(doc: Doc) -> int:
-    """Count word tokens (is_alpha) - the project-wide "word", as in word_count.
-
-    Punctuation, numbers, and symbols are not words.
-    """
+    """Count word tokens (is_alpha) - the project-wide "word"."""
     return sum(1 for token in doc if token.is_alpha)
 
 
 def _word_frequencies(doc: Doc) -> Counter[str]:
-    """Frequency of each case-folded word type (is_alpha tokens, via lower_).
-
-    "The" and "the" fold to one type. The distribution both richness metrics
-    (Yule's K, Honoré's R) and the word-list metrics read.
-    """
+    """Frequency of each case-folded word type ("The"/"the" fold to one)."""
     return Counter(token.lower_ for token in doc if token.is_alpha)
 
 
@@ -67,24 +55,18 @@ def mean_word_length(doc: Doc) -> dict[str, float]:
 
 
 def yules_k(doc: Doc) -> dict[str, float]:
-    """Metric 2: Yule's K = length-stable richness.
-
-    Repetition raises K; varied vocabulary lowers it.
-    """
+    """Metric 2: Yule's K = length-stable richness (repetition raises K)."""
     counts = _word_frequencies(doc)
-    total = sum(counts.values())  # N
+    total = sum(counts.values())
     if total == 0:
         return {"yules_k": 0.0}
-    sum_squares = sum(count * count for count in counts.values())  # S2
+    sum_squares = sum(count * count for count in counts.values())
     k = 10_000 * (sum_squares - total) / (total * total)
     return {"yules_k": k}
 
 
 def archaic_word_rate(doc: Doc) -> dict[str, float]:
-    """Metric 3: share of words found in ARCHAIC_WORDS (curated, not exhaustive).
-
-    Separates "thee/thou/hath" authors from modern prose.
-    """
+    """Metric 3: share of words found in ARCHAIC_WORDS."""
     words = _alpha_word_count(doc)
     if words == 0:
         return {"archaic_word_rate": 0.0}
@@ -94,16 +76,13 @@ def archaic_word_rate(doc: Doc) -> dict[str, float]:
 
 
 def honore_r(doc: Doc) -> dict[str, float]:
-    """Metric 4: Honoré's R = hapax-based richness.
-
-    More once-only words -> larger R.
-    """
+    """Metric 4: Honoré's R = hapax-based richness (more hapaxes -> larger R)."""
     counts = _word_frequencies(doc)
-    total = sum(counts.values())  # N
-    vocab_size = len(counts)  # V
+    total = sum(counts.values())
+    vocab_size = len(counts)
     if total == 0 or vocab_size == 0:
         return {"honore_r": 0.0}
-    hapaxes = sum(1 for count in counts.values() if count == 1)  # V1
+    hapaxes = sum(1 for count in counts.values() if count == 1)
     denominator = 1 - (hapaxes / vocab_size)
     if denominator == 0:
         return {"honore_r": 0.0}
@@ -131,10 +110,7 @@ def mean_sentence_length(doc: Doc) -> dict[str, float]:
 
 
 def sentence_length_stdev(doc: Doc) -> dict[str, float]:
-    """Metric 7: population stdev of sentence length in words - rhythm burstiness.
-
-    Low = metronome; high = bursty (Peake).
-    """
+    """Metric 7: population stdev of sentence length in words - rhythm burstiness."""
     lengths = [sum(1 for token in sent if token.is_alpha) for sent in doc.sents]
     if len(lengths) < 2:
         return {"sentence_length_stdev": 0.0}
@@ -142,10 +118,7 @@ def sentence_length_stdev(doc: Doc) -> dict[str, float]:
 
 
 def _token_depth(token: Token) -> int:
-    """Hops from a token up to its sentence ROOT (ROOT = depth 0).
-
-    Follow each token's head until a token is its own head (the ROOT marker).
-    """
+    """Hops from a token up to its sentence ROOT (ROOT = depth 0)."""
     depth = 0
     while token.head != token:
         token = token.head
@@ -154,10 +127,7 @@ def _token_depth(token: Token) -> int:
 
 
 def mean_parse_tree_depth(doc: Doc) -> dict[str, float]:
-    """Metric 8: mean over sentences of the deepest token's distance to ROOT.
-
-    Deeper = more clause-within-clause (hypotactic) prose.
-    """
+    """Metric 8: mean over sentences of the deepest token's distance to ROOT."""
     depths = [
         max((_token_depth(token) for token in sent), default=0)
         for sent in doc.sents
@@ -168,11 +138,8 @@ def mean_parse_tree_depth(doc: Doc) -> dict[str, float]:
 
 
 def _classify_sentence(sent: Span) -> str:
-    """Label a sentence simple/compound/complex from its dependencies.
-
-    Priority: complex (SUBORDINATE_DEPS) > compound (VERB/AUX "conj" off ROOT) >
-    simple; complex wins ties.
-    """
+    """Label a sentence simple/compound/complex from its dependencies; complex
+    (SUBORDINATE_DEPS) > compound (VERB/AUX "conj" off ROOT) > simple."""
     if any(token.dep_ in SUBORDINATE_DEPS for token in sent):
         return "complex"
     coordinated = any(
@@ -199,11 +166,8 @@ def sentence_type_mix(doc: Doc) -> dict[str, float]:
 
 
 def punctuation_frequency(doc: Doc) -> dict[str, float]:
-    """Metric 10 (multi-value): per-word rate of each PUNCTUATION_MARKS group.
-
-    Keyed punct_<name>, each group's occurrences over total words. Per word so
-    it scales to "marks per 1000 words".
-    """
+    """Metric 10 (multi-value): per-word rate of each PUNCTUATION_MARKS group,
+    keyed punct_<name>."""
     words = _alpha_word_count(doc)
     mark_counts = Counter(token.text for token in doc if token.is_punct)
     result: dict[str, float] = {}
@@ -214,12 +178,9 @@ def punctuation_frequency(doc: Doc) -> dict[str, float]:
 
 
 def contraction_rate(doc: Doc) -> dict[str, float]:
-    """Metric 11: contractions per word.
-
-    spaCy splits a contraction into a clitic ("n't", "'ve", ...); count those
-    after normalising the smart apostrophe. "'s" counts only when not possessive
-    (tag POS).
-    """
+    """Metric 11: contractions per word. spaCy splits a contraction into a
+    clitic; count those after normalising the apostrophe. "'s" counts only
+    when not possessive (tag POS)."""
     words = _alpha_word_count(doc)
     if words == 0:
         return {"contraction_rate": 0.0}
@@ -237,12 +198,8 @@ def contraction_rate(doc: Doc) -> dict[str, float]:
 
 
 def dialogue_narration_ratio(doc: Doc) -> dict[str, float]:
-    """Metric 12: fraction of words inside double quotes.
-
-    Sweep tokens flipping an "inside quote" switch (left smart-quote opens,
-    right closes, straight quote toggles); words while on are dialogue. Value is
-    dialogue / all words. Single quotes (apostrophes) ignored.
-    """
+    """Metric 12: fraction of words inside double quotes. Sweep tokens flipping
+    an "inside quote" switch; words while on are dialogue."""
     total = 0
     dialogue = 0
     inside_quote = False

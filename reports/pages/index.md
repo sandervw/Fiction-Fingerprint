@@ -31,20 +31,14 @@ order by fvo.jaccard desc
 
 ```sql comparison
 select
-    dm.display_name,
-    dm.metric_name,
-    case when da.is_self then 'You' else da.name end as who,
-    avg(fsm.zscore) as zscore
-from warehouse.fact_style_measurement fsm
-join warehouse.dim_metric dm
-    on fsm.metric_key = dm.metric_key
-join warehouse.dim_author da
-    on fsm.author_key = da.author_key
-where dm.is_multivalue = false
-    and dm.metric_name <> 'jaccard'
-    and (da.is_self or da.name = '${inputs.author.value}')
-group by dm.display_name, dm.metric_name, who
-order by dm.metric_name, who
+    display_name,
+    case when is_self then 'You' else author end as who,
+    avg(zscore) as zscore
+from warehouse.mart_style_long
+where is_multivalue = false
+    and (is_self or author = '${inputs.author.value}')
+group by display_name, who
+order by display_name, who
 ```
 
 Z-score distance above (+) or below (–) the corpus average: me vs. the chosen author.

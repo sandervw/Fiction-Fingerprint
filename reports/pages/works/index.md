@@ -4,25 +4,22 @@ neverShowQueries: true
 ---
 
 ```sql author_list
-select distinct da.name
-from warehouse.dim_author da
-join warehouse.fact_style_measurement fsm
-    on fsm.author_key = da.author_key
-order by da.name
+select distinct author as name
+from warehouse.mart_style_long
+order by name
 ```
 
 ```sql chosen
 select
-    da.name,
-    count(distinct dw.work_key) as works,
-    sum(dw.word_count) as total_words
-from warehouse.dim_author da
-join warehouse.dim_work dw
-    on dw.author_key = da.author_key
-join warehouse.fact_style_measurement fsm
-    on fsm.work_key = dw.work_key
-where da.name = '${inputs.author.value}'
-group by da.name
+    author as name,
+    count(*) as works,
+    sum(word_count) as total_words
+from (
+    select distinct author, work_key, word_count
+    from warehouse.mart_style_long
+    where author = '${inputs.author.value}'
+)
+group by author
 ```
 
 <Dropdown data={author_list} name=author value=name title="Author" defaultValue="Sander VanWilligen" />
@@ -33,22 +30,17 @@ group by da.name
 
 ```sql spread
 select
-    dm.display_name as metric,
-    min(fsm.zscore) as min_z,
-    quantile_cont(fsm.zscore, 0.25) as q1_z,
-    median(fsm.zscore) as median_z,
-    quantile_cont(fsm.zscore, 0.75) as q3_z,
-    max(fsm.zscore) as max_z
-from warehouse.fact_style_measurement fsm
-join warehouse.dim_metric dm
-    on fsm.metric_key = dm.metric_key
-join warehouse.dim_author da
-    on fsm.author_key = da.author_key
-where dm.is_multivalue = false
-    and dm.metric_name <> 'jaccard'
-    and da.name = '${inputs.author.value}'
-group by dm.display_name
-order by max(fsm.zscore) - min(fsm.zscore) desc
+    display_name as metric,
+    min(zscore) as min_z,
+    quantile_cont(zscore, 0.25) as q1_z,
+    median(zscore) as median_z,
+    quantile_cont(zscore, 0.75) as q3_z,
+    max(zscore) as max_z
+from warehouse.mart_style_long
+where is_multivalue = false
+    and author = '${inputs.author.value}'
+group by display_name
+order by max(zscore) - min(zscore) desc
 ```
 
 <BoxPlot
@@ -99,7 +91,7 @@ join warehouse.dim_author da
     on dw.author_key = da.author_key
 where da.name = '${inputs.author.value}'
     and dw.work_key in (
-        select work_key from warehouse.fact_style_measurement
+        select work_key from warehouse.mart_style_long
     )
 order by dw.word_count desc nulls last
 ```

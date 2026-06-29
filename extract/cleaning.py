@@ -1,11 +1,8 @@
 """Markdown -> plain prose cleanup for the prose-fingerprint extractor.
 
-A separate quality step: strip markdown SYNTAX (frontmatter, headings, scene
-breaks, emphasis, links) while leaving the author's PROSE and its punctuation
-(em-dashes, smart quotes, apostrophes, interrupted-dialogue hyphens) untouched,
-because that punctuation is itself measured downstream. One pure function, no
-I/O. Rules are applied in order; order matters (whole-line drops before inline
-emphasis), so each step is a separate, named regex.
+Strips markdown syntax (frontmatter, headings, scene breaks, emphasis, links)
+while leaving prose punctuation untouched, since it is measured downstream.
+Rules apply in order: whole-line drops before inline emphasis.
 """
 
 from __future__ import annotations
@@ -13,25 +10,21 @@ from __future__ import annotations
 import re
 
 
-# Leading YAML frontmatter block: ---\n ... \n---\n at the very start of file.
+# Leading YAML frontmatter block.
 _FRONTMATTER = re.compile(r"\A---\n.*?\n---\n", re.DOTALL)
 
-# Source-attribution line on the raw public-domain dumps, e.g.
-# *Source: https://www.gutenberg.org/... Public domain.* - never prose.
+# Source-attribution line on the raw public-domain dumps - never prose.
 _SOURCE_LINE = re.compile(r"(?m)^[ \t]*\*{1,2}\s*Source:.*$")
 
-# Author byline: an emphasised, standalone name line at the very top (after an
-# optional title heading), e.g. *Clark Ashton Smith* or **by Jack Vance**. The
-# \A anchor keeps this from touching mid-prose emphasis or the self-stories
-# (whose frontmatter is already gone and whose body isn't an emphasised line).
+# Emphasised, standalone byline at the top; \A anchor avoids mid-prose emphasis.
 _LEADING_BYLINE = re.compile(r"\A(?:[ \t]*#[^\n]*\n)?\s*\*{1,2}[^*\n]+\*{1,2}[ \t]*\n")
 
-# Whole lines to delete entirely (heading / scene-break / horizontal rule).
+# Whole lines to delete (heading / scene-break / horizontal rule).
 _HEADING_LINE = re.compile(r"(?m)^[ \t]*#{1,6}[ \t].*$")
 _RULE_LINE = re.compile(
-    r"(?m)^[ \t]*(?:\*[ \t]*){3,}$"  # * * *  or  ***
-    r"|^[ \t]*-{3,}[ \t]*$"          # ---
-    r"|^[ \t]*_{3,}[ \t]*$"          # ___
+    r"(?m)^[ \t]*(?:\*[ \t]*){3,}$"
+    r"|^[ \t]*-{3,}[ \t]*$"
+    r"|^[ \t]*_{3,}[ \t]*$"
 )
 
 # Inline markers: strip the syntax, keep the words inside.
@@ -50,7 +43,7 @@ _EXTRA_BLANKS = re.compile(r"\n{3,}")
 
 def clean_markdown(raw: str) -> str:
     """Reduce raw markdown to plain prose, leaving prose punctuation intact."""
-    # Normalise line endings first so every line-anchored rule below is reliable.
+    # Normalise line endings so line-anchored rules below are reliable.
     text = raw.replace("\r\n", "\n").replace("\r", "\n")
 
     text = _FRONTMATTER.sub("", text)
