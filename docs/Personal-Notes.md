@@ -33,9 +33,10 @@ create profiles.yml in project root
 
 ## Design Decisions
 
-Raw data is extracted from /corups via the /extracts python logic
+Raw data is extracted from /corpus via the /extracts python logic
 
-Five python files:
+Seven python files:
+- `build_seed.py` - "the junior cook"; parses files to create authors csv
 - `cleaning.py` - "the wash/strainer station"; cleans the raw file text
 - `extracts.py` - "the cook"; knows text and NLP; cleans, parses with spaCy; runs metrics, assembles types rows; the 'E' of ELT
 - `lexicons.py` - "the reference charts"; a list of spice rack spices; holds data, not logic
@@ -55,7 +56,7 @@ Python creates a few 'raw' schema tables in duckdb
 - raw_vocab (one row per work per word)
   - USed to claculate vocab overlap between me and others authors (Jaccard)
 
-## dbt Dimensions
+## dbt Models
 
 A dimension is just a model: one `.sql` file = one `SELECT`.
 dbt runs the SELECT and wraps it in `CREATE TABLE AS ...`;
@@ -72,7 +73,7 @@ dbt runs the SELECT and wraps it in `CREATE TABLE AS ...`;
 
 Key point: schema and transformation are the SAME file (the SELECT). The `.yml` only describes and tests what that SELECT produces
 
-### Files for one dimension (e.g. dim_work)
+### Files for one model (e.g. dim_work)
 
 1. `models/marts/dim_work.sql` - the transformation + the schema (the SELECT).
 2. `models/marts/_marts.yml` - docs + tests (optional but wanted).
@@ -107,7 +108,7 @@ Same concept from BI, just expressed as code
 - Serve-ready, business-facing layer (dim_/fct_/agg_ tables)
 - In a modular data modeling approach, data marts sit at the top of the transformation hierarchy
 - Organize them by domain, exactly like your finance and marketing marts
-- dbt recommends denormalizing heavily into wide tables; with one
+- dbt recommends denormalizing heavily into wide tables
 - Keep marts relatively simple and avoid too many joins, pushing complexity into the intermediate layer. 
 
 ## Macros

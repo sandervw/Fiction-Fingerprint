@@ -14,15 +14,15 @@ models:
         data_tests:
           - accepted_values:
               arguments:
-                values: ['additive', 'semi-additive', 'non-additive']
+                values: ["additive", "semi-additive", "non-additive"]
 
   - name: dim_author
-    description: "One row per author, deduped from the work-grain seed (Option A)."
+    description: "One row per author, deduped from the work-grain seed."
     columns:
       - name: author_key
         description: "Surrogate hash of author name."
         data_tests:
-          - unique          # fails loudly if an author's works disagree on tradition/era
+          - unique # fails loudly if an author's works disagree on tradition/era
           - not_null
 
   - name: dim_work
@@ -36,11 +36,11 @@ models:
       - name: word_count
         description: "Cleaned word count from stg_works."
         data_tests:
-          - not_null        # catches a catalogued work that never got measured
+          - not_null # catches a catalogued work that never got measured
       - name: author_key
         description: "FK to dim_author."
         data_tests:
-          - relationships:   # every work's author must exist in dim_author
+          - relationships: # every work's author must exist in dim_author
               arguments:
                 to: ref('dim_author')
                 field: author_key
@@ -49,7 +49,7 @@ models:
         data_tests:
           - accepted_values:
               arguments:
-                values: ['short-story', 'novella', 'novel']
+                values: ["short-story", "novella", "novel"]
 
   - name: fact_style_measurement
     description: "Central fact: one row per work x metric series (8,505). Carries value + z-score, FKs to dim_work, dim_author, and dim_metric."
@@ -57,7 +57,7 @@ models:
       - name: measurement_key
         description: "Surrogate hash of (work_id, metric_name). PK + grain guard."
         data_tests:
-          - unique          # fails if (work, series) ever duplicates -> grain broken
+          - unique # fails if (work, series) ever duplicates -> grain broken
           - not_null
       - name: work_key
         description: "FK to dim_work."
@@ -137,7 +137,7 @@ models:
   - name: mart_style_long
     description: "Report-serving OBT (8,505): fact_style_measurement denormalized against its dims, kept long, with a precomputed series_label. Feeds the Evidence pages so they don't re-join the star."
     data_tests:
-      - dbt_utils.unique_combination_of_columns:    # grain = work x child series
+      - dbt_utils.unique_combination_of_columns: # grain = work x child series
           arguments:
             combination_of_columns:
               - work_key

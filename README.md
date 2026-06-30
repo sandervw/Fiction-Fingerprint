@@ -33,12 +33,12 @@ Fifteen stylometric measures across four families:
 
 ## Stack
 
-| Layer      | Tool                                  |
-| ---------- | ------------------------------------- |
-| Extract    | Python, spaCy (`en_core_web_sm`)      |
-| Warehouse  | DuckDB (single file)                  |
-| Transform  | dbt Core + `dbt_utils`                |
-| BI         | Evidence.dev                          |
+| Layer     | Tool                             |
+| --------- | -------------------------------- |
+| Extract   | Python, spaCy (`en_core_web_sm`) |
+| Warehouse | DuckDB (single file)             |
+| Transform | dbt Core + `dbt_utils`           |
+| BI        | Evidence.dev                     |
 
 The dbt models avoid engine-specific SQL, so the warehouse is designed to port to
 Microsoft Fabric with only a `profiles.yml` change.
@@ -61,6 +61,7 @@ Python is managed with `uv`; dbt runs against the bundled DuckDB file.
 uv run python extract/extract.py     # parse corpus, land raw tables
 cd prose_fingerprint
 dbt build                            # seeds, models, and tests
+dbt docs generate && dbt docs serve  # the DAG
 cd ../reports && npm run dev         # the dashboard
 ```
 
