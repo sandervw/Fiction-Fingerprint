@@ -18,7 +18,7 @@ where dw.work_id = '${params.work}'
 
 # <Value data={work} column=title/>
 
-By [<Value data={work} column=author/>](<Value data={work} column=author_link/>) - <Value data={work} column=prose_type/>, <Value data={work} column=word_count fmt=num0/> words.
+By <a href={work[0]?.author_link}><Value data={work} column=author/></a> - <Value data={work} column=prose_type/>, <Value data={work} column=word_count fmt=num0/> words.
 
 ## Departure from the Author's Norm*
 
