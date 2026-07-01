@@ -46,6 +46,13 @@ npm run dev        # dev server on localhost:3000
 
 `npm run build` produces the static site. `npm run sources -- --changed` rebuilds only changed sources.
 
+### Deploying to Cloudflare Pages (learned 2026-07-01)
+
+- Build command `npm run sources && npm run build`, output dir `build`, root dir `reports`.
+- Prerender crawls every link; a `<Value/>` inside a markdown link URL becomes a literal href and 404s the build. Markdown also URL-encodes `[0]` in link destinations, so use a raw `<a href={query[0].col}>` for dynamic links.
+- Pages (and Workers) cap files at 25 MiB; the bundled duckdb-wasm binaries (~33-38 MB) exceed it. `reports/scripts/cdn-wasm.js` (npm `postbuild`) rewrites their URLs to jsDelivr and deletes them from `build/`.
+- `npm run dev` skips prerender; only `npm run build` reproduces deploy failures.
+
 ---
 
 ## Connecting to our DuckDB
