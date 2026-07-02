@@ -1,0 +1,205 @@
+/* iA Writer Quattro S - self-hosted */
+@font-face {
+  font-family: "ia-writer-quattro-s";
+  src: url("./assets/fonts/iAWriterQuattroSRegular.woff") format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "ia-writer-quattro-s";
+  src: url("./assets/fonts/iAWriterQuattroSItalic.woff") format("woff");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "ia-writer-quattro-s";
+  src: url("./assets/fonts/iAWriterQuattroSBold.woff") format("woff");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "ia-writer-quattro-s";
+  src: url("./assets/fonts/iAWriterQuattroSBoldItalic.woff") format("woff");
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+/*============================================
+  WORDLEAVES LAYOUT
+  - Single-column centered layout with slide-out drawer navigation
+  - Follows the Laws of Sparse
+  ============================================*/
+
+/*============================================
+  UTILS: Utility classes for common styles
+  ============================================*/
+.title {
+  font-weight: var(--weight-bold);
+  margin-bottom: var(--small);
+}
+.meta {
+  color: var(--color-gray);
+  font-size: var(--medium);
+}
+
+/*============================================
+  NAVBAR: Spans the top of the page
+  ============================================*/
+.navbar {
+  position: sticky;
+  top: 0;
+  display: flex;
+  justify-content: space-between;
+  padding: var(--small);
+  background-color: var(--color-bg-primary);
+  anchor-name: --drawer-anchor;
+}
+.navbar-title {
+  font-weight: var(--weight-bold);
+  font-size: var(--xlarge);
+  color: var(--color-accent);
+}
+.navbar-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--small);
+}
+[data-navbar-title="hidden"] svg {
+  fill: var(--color-gray);
+}
+[data-navbar-title="hidden"] svg:hover {
+  fill: var(--color-accent);
+}
+[data-navbar-title="hidden"] .navbar-title-group > a,
+[data-navbar-title="hidden"] .navbar-title-group > p {
+  display: none;
+}
+
+/*============================================
+  PAGE: Main content area
+  ============================================*/
+.page {
+  padding: var(--large);
+}
+.page-text p {
+  margin-bottom: var(--medium);
+  line-height: var(--line-height-loose);
+}
+.page-text h1,
+.page-text h2,
+.page-text h3 {
+  margin-top: var(--large);
+  margin-bottom: var(--medium);
+}
+.page-text h1:first-child,
+.page-text h2:first-child,
+.page-text h3:first-child {
+  margin-top: 0;
+}
+.page-text hr {
+  border: none;
+  border-top: var(--border-width) solid var(--color-gray);
+  margin-top: var(--large);
+  margin-bottom: var(--large);
+}
+.page-text code {
+  font-family: monospace;
+  font-size: var(--medium);
+}
+.page-text table {
+  width: var(--percent-100);
+  border-collapse: collapse;
+  margin-bottom: var(--medium);
+}
+.page-text th,
+.page-text td {
+  border: var(--border-width) solid var(--color-gray);
+  padding: var(--small) var(--medium);
+  text-align: left;
+  vertical-align: top;
+  font-weight: var(--weight-normal);
+}
+.page-text blockquote {
+  border-left: var(--xsmall);
+  padding-left: var(--medium);
+  margin-top: var(--medium);
+  margin-bottom: var(--medium);
+}
+
+/*============================================
+  FOOTER: Spans the bottom of the page
+  ============================================*/
+.footer {
+  padding: var(--large);
+  text-align: center;
+}
+
+/*============================================
+  MARKDOWN IMAGE STYLES
+  ============================================*/
+.page-text img {
+  max-width: var(--percent-100);
+  height: auto;
+}
+
+/*============================================
+  DRAWER: Navigation panel that expands around the leaf icon
+  ============================================*/
+.drawer {
+  width: max-content;
+  padding: var(--small);
+  background-color: var(--color-bg-primary);
+  box-sizing: border-box;
+  display: none;
+  flex-direction: column;
+  gap: var(--small);
+}
+.drawer.revealed {
+  display: flex;
+  position: fixed;
+  position-anchor: --drawer-anchor;
+  top: anchor(bottom);
+  left: anchor(left);
+  bottom: 0;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+/*============================================
+  RESPONSIVE: Tablet and below
+  ============================================*/
+@media (max-width: 67.5rem) {
+  .width-50 {
+    width: var(--percent-100);
+  }
+
+  .page {
+    padding: var(--small);
+  }
+
+  .drawer {
+    max-width: 75vw;
+  }
+}
+
+/*============================================
+  PRINT
+  ============================================*/
+@media print {
+  .navbar {
+    display: none;
+  }
+
+  .width-50 {
+    width: var(--percent-100);
+  }
+
+  .container {
+    border: none;
+  }
+}

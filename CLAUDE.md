@@ -21,6 +21,11 @@ A learning project for **dbt Core + DuckDB**. The domain (stylometric "fingerpri
 - **Be lean.** Fewest words possible in chat and in prose docs. No extended justification, no restating known facts, no exhaustive examples.
 - **Never stage or commit.** Don't run `git add`/`git commit` unless explicitly instructed; the user handles version control.
 
+## Deployment
+
+- The Evidence site (`reports/`) is published to Cloudflare Pages at **lucencies.com**.
+- Styling mirrors the user's other site, **wordleaves.com** (see `reports/sparse.css` + `reports/wordleaves.css`: cream/charcoal, copper accent, iA Writer Quattro font).
+
 ## Environment
 
 - Windows 11, bash terminal, VS Code. Python 3.14 and `uv` are installed.

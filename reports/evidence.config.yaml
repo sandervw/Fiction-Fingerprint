@@ -1,62 +1,59 @@
 appearance:
-  default: system
+  default: light
   switcher: true
 
+# Wordleaves palette: copper-anchored, CVD-validated per mode
 theme:
   colorPalettes:
     default:
       light:
-        - "#236aa4"
-        - "#45a1bf"
-        - "#a5cdee"
-        - "#8dacbf"
-        - "#85c7c6"
-        - "#d2c6ac"
-        - "#f4b548"
+        - "#b87333"
+        - "#2e6fb0"
+        - "#17997d"
         - "#8f3d56"
-        - "#71b9f4"
-        - "#46a485"
+        - "#74883f"
+        - "#7c6fc0"
+        - "#a8842c"
+        - "#b0565f"
       dark:
-        - "#236aa4"
-        - "#45a1bf"
-        - "#a5cdee"
-        - "#8dacbf"
-        - "#85c7c6"
-        - "#d2c6ac"
-        - "#f4b548"
-        - "#8f3d56"
-        - "#71b9f4"
-        - "#46a485"
+        - "#c4813f"
+        - "#5b93d6"
+        - "#34a689"
+        - "#aa5480"
+        - "#7f9440"
+        - "#8b7dcf"
+        - "#b28a2e"
+        - "#c96f78"
   colorScales:
     default:
       light:
-        - "#ADD8E6"
-        - "#00008B"
+        - "#eedcc8"
+        - "#6b3f16"
       dark:
-        - "#ADD8E6"
-        - "#00008B"
+        - "#4a3624"
+        - "#eec089"
   colors:
     primary:
-      light: "#2563eb"
-      dark: "#3b82f6"
+      light: "#b87333"
+      dark: "#c4813f"
     accent:
-      light: "#c2410c"
-      dark: "#fdba74"
+      light: "#b87333"
+      dark: "#c4813f"
     base:
-      light: "#ffffff"
-      dark: "#09090b"
+      light: "#faf9f5"
+      dark: "#262624"
     info:
-      light: "#0284c7"
-      dark: "#38bdf8"
+      light: "#3f6f9e"
+      dark: "#5b93d6"
     positive:
-      light: "#16a34a"
-      dark: "#4ade80"
+      light: "#17997d"
+      dark: "#34a689"
     warning:
-      light: "#f8c900"
-      dark: "#fbbf24"
+      light: "#a8842c"
+      dark: "#b28a2e"
     negative:
-      light: "#dc2626"
-      dark: "#f87171"
+      light: "#c41e3a"
+      dark: "#d95870"
 
 plugins:
   components:

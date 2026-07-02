@@ -116,6 +116,19 @@ select * from ${author_lengths} where mean_word_length > 4
 
 ---
 
+## Theming & custom styling (learned 2026-07-02)
+
+- `evidence.config.yaml` → `appearance:` sets `default: light|dark|system` and `switcher: true` (built-in light/dark toggle, lives in the header kebab menu).
+- `theme.colors` tokens: `primary`, `accent`, `base`, `info`, `positive`, `warning`, `negative` — each with `light:`/`dark:` hex. `base` drives the whole surface: Evidence generates `base-100/200/300` + `base-content` shades from it (header, sidebar, borders, text).
+- `theme.colorPalettes.default` (categorical chart series) and `theme.colorScales.default` (sequential 2-endpoint ramp), each per mode.
+- **Custom layout:** any `pages/+layout.svelte` overrides the default. Copy from `.evidence/template/src/pages/+layout.svelte`, keep the `'../app.css'` import, wrap content in `<EvidenceDefaultLayout {data} ...props>`. Useful props: `title` (text wordmark replacing the Evidence logo), `logo`, `hideSidebar`, `fullWidth`, `maxWidth`, `builtWithEvidence`.
+- **Custom CSS:** import a plain `.css` from the custom layout (e.g. `import './wordleaves-theme.css'`); it bundles after `app.css` so equal-specificity rules win. Static assets (fonts) go in `reports/static/`, referenced by absolute path (`/fonts/x.woff`).
+- Dark mode = `dark` class on `<html>`; scope CSS overrides with `html.dark`.
+- Limitation: chart text (ECharts canvas) doesn't inherit page CSS fonts.
+- Ours: `pages/wordleaves-theme.css` + copper/cream/charcoal tokens in config, mirroring wordleaves.com (`reports/sparse.css`, `reports/wordleaves.css`).
+
+---
+
 ## Exposures (dbt link)
 
 Once a dashboard exists, declare it as a dbt `exposure` so lineage knows the marts feed it. That's the planned Week-3 follow-up after the dashboard is up.

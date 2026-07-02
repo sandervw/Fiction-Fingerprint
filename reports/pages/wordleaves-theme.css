@@ -1,0 +1,69 @@
+/* Wordleaves flavor for Evidence: Quattro font, copper accent, sparse look.
+   Colors live in evidence.config.yaml (base/primary/palettes); this file
+   covers what the theme config can't reach. */
+
+@font-face {
+	font-family: 'ia-writer-quattro-s';
+	src: url('/fonts/iAWriterQuattroSRegular.woff') format('woff');
+	font-weight: 400;
+	font-style: normal;
+	font-display: swap;
+}
+@font-face {
+	font-family: 'ia-writer-quattro-s';
+	src: url('/fonts/iAWriterQuattroSItalic.woff') format('woff');
+	font-weight: 400;
+	font-style: italic;
+	font-display: swap;
+}
+@font-face {
+	font-family: 'ia-writer-quattro-s';
+	src: url('/fonts/iAWriterQuattroSBold.woff') format('woff');
+	font-weight: 700;
+	font-style: normal;
+	font-display: swap;
+}
+@font-face {
+	font-family: 'ia-writer-quattro-s';
+	src: url('/fonts/iAWriterQuattroSBoldItalic.woff') format('woff');
+	font-weight: 700;
+	font-style: italic;
+	font-display: swap;
+}
+
+:root {
+	--wl-accent: #b87333;
+}
+html.dark {
+	--wl-accent: #c4813f;
+}
+
+*,
+*::before,
+*::after {
+	font-family: 'ia-writer-quattro-s', ui-sans-serif, system-ui, sans-serif;
+}
+pre,
+code,
+kbd,
+samp,
+pre *,
+code * {
+	font-family: ui-monospace, Consolas, 'Courier New', monospace;
+}
+
+/* Copper wordmark, like the Wordleaves navbar title */
+header a[href='/'] {
+	color: var(--wl-accent);
+	font-size: 1.125rem;
+}
+
+/* Wordleaves prose rhythm */
+article#evidence-main-article > p.markdown {
+	line-height: 1.8;
+}
+
+/* Law of Sparse #10: no box shadows */
+[class*='shadow'] {
+	box-shadow: none;
+}

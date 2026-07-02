@@ -3,7 +3,7 @@ title: Prose Fingerprint
 neverShowQueries: true
 ---
 
-How my prose compares to the authors in the measured corpus, (measured as **z-scores**). Positive means I do *more* of something than the typical work; negative, less.
+How [my prose](https://wordleaves.com) compares to the authors in the measured corpus, (measured as **z-scores**). Positive means I do *more* of something than the typical work; negative, less.
 
 ## Vocabulary Overlap
 
@@ -32,7 +32,7 @@ order by fvo.jaccard desc
 ```sql comparison
 select
     display_name,
-    case when is_self then 'You' else author end as who,
+    case when is_self then 'Me' else author end as who,
     avg(zscore) as zscore
 from warehouse.mart_style_long
 where is_multivalue = false

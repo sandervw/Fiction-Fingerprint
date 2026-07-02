@@ -1,0 +1,583 @@
+/* ### The Laws of Sparse CSS
+*By Sander Vanwilligen*
+1. There are no more than 5 of any variable type. `No Exceptions.`
+2. There are no hardcoded numeric values - only CSS variables. `No Exceptions.`
+3. There are no ems - only rems. `No Exceptions.`
+4. There are no more than 3 distinct 'types' of a class. `No Exceptions.`
+5. There are 4 percentages: 25%, 50%, 75%, 100%. `No Exceptions.`
+6. There are 2 colors: 'copper' and 'danger'. `No Exceptions.`
+7. There may be no more than 2 classes applied to any element. `No Exceptions.`
+8. There is only one animation speed. `No Exceptions.`
+9. There is only one border radius. `No Exceptions.`
+10. No box shadows. `No Exceptions.`
+
+`No Exceptions.` */
+
+/*============================================
+  RESET
+  ============================================*/
+*,
+*::before,
+*::after {
+  font-family: "ia-writer-quattro-s", arial, sans-serif;
+  color: var(--color-text-primary);
+  text-decoration: none;
+  margin: 0;
+}
+html,
+body,
+#root {
+  max-height: var(--percent-100);
+}
+
+/*============================================
+  VARIABLES
+  ============================================*/
+:root {
+  /* Color palette */
+  --color-white: #faf9f5;
+  --color-black: #262624;
+  --color-gray: #7b7b7b;
+  --color-copper: #b87333;
+  --color-red: #c41e3a;
+  /* Color Usage */
+  --color-accent: var(--color-copper);
+  --color-placeholder: var(--color-gray);
+  --color-danger: var(--color-red);
+  --color-text-primary: var(--color-white);
+  --color-bg-primary: var(--color-black);
+  background-color: var(--color-bg-primary);
+  /* Sizes */
+  --xsmall: 0.25rem;
+  --small: 0.5rem;
+  --medium: 1rem;
+  --large: 1.5rem;
+  --xlarge: 2rem;
+  /* Percentages */
+  --percent-25: 25%;
+  --percent-50: 50%;
+  --percent-75: 75%;
+  --percent-100: 100%;
+  /* Font weights */
+  --weight-light: 700;
+  --weight-medium: 700;
+  --weight-bold: 700;
+  /* Line heights */
+  --line-height-tight: 1.2;
+  --line-height-normal: 1.5;
+  --line-height-loose: 1.8;
+  /* Borders */
+  --border-width: 1px;
+  /* Z-index layers */
+  --z-base: 0;
+  --z-overlay: 100;
+  --z-nav: 200;
+  --z-modal: 300;
+  --z-hoverable: 400;
+  /* Transitions */
+  --transition-fast: 0.15s ease;
+  /* Breakpoints */
+  --breakpoint-tablet: 67.5rem;
+}
+
+[data-theme="dark"] {
+  --color-text-primary: var(--color-white);
+  --color-bg-primary: var(--color-black);
+}
+
+[data-theme="light"] {
+  --color-text-primary: var(--color-black);
+  --color-bg-primary: var(--color-white);
+}
+
+/*============================================
+  SPACING UTILITIES
+  ============================================*/
+.gap-small {
+  gap: var(--small);
+}
+.gap-medium {
+  gap: var(--medium);
+}
+.gap-large {
+  gap: var(--large);
+}
+.padding-small {
+  padding: var(--small);
+}
+.padding-medium {
+  padding: var(--medium);
+}
+.padding-large {
+  padding: var(--large);
+}
+.margin-small {
+  margin: var(--small);
+}
+.margin-medium {
+  margin: var(--medium);
+}
+.margin-large {
+  margin: var(--large);
+}
+.margin-center {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/*============================================
+  FONT UTILITIES
+  ============================================*/
+.font-small {
+  font-size: var(--small);
+}
+.font-medium {
+  font-size: var(--medium);
+}
+.font-large {
+  font-size: var(--large);
+}
+.font-italic {
+  font-style: italic;
+}
+.text-left {
+  text-align: left;
+}
+.text-center {
+  text-align: center;
+}
+.text-right {
+  text-align: right;
+}
+
+/*============================================
+  SIZE UTILITIES
+  ============================================*/
+.width-100 {
+  width: var(--percent-100);
+}
+.width-75 {
+  width: var(--percent-75);
+}
+.width-50 {
+  width: var(--percent-50);
+}
+.width-25 {
+  width: var(--percent-25);
+}
+.height-100 {
+  height: var(--percent-100);
+}
+.height-75 {
+  height: var(--percent-75);
+}
+.height-50 {
+  height: var(--percent-50);
+}
+.height-25 {
+  height: var(--percent-25);
+}
+.max-width-100 {
+  max-width: var(--percent-100);
+}
+.max-width-75 {
+  max-width: var(--percent-75);
+}
+.max-width-50 {
+  max-width: var(--percent-50);
+}
+.max-width-25 {
+  max-width: var(--percent-25);
+}
+.min-width-100 {
+  min-width: var(--percent-100);
+}
+.min-width-75 {
+  min-width: var(--percent-75);
+}
+.min-width-50 {
+  min-width: var(--percent-50);
+}
+.min-width-25 {
+  min-width: var(--percent-25);
+}
+.max-height-100 {
+  max-height: var(--percent-100);
+}
+.max-height-75 {
+  max-height: var(--percent-75);
+}
+.max-height-50 {
+  max-height: var(--percent-50);
+}
+.max-height-25 {
+  max-height: var(--percent-25);
+}
+.min-height-100 {
+  min-height: var(--percent-100);
+}
+.min-height-75 {
+  min-height: var(--percent-75);
+}
+.min-height-50 {
+  min-height: var(--percent-50);
+}
+.min-height-25 {
+  min-height: var(--percent-25);
+}
+
+/*============================================
+  Z-INDEX UTILITIES
+  ============================================*/
+.z-base {
+  z-index: var(--z-base);
+  position: relative;
+}
+.z-overlay {
+  z-index: var(--z-overlay);
+  position: relative;
+}
+.z-nav {
+  z-index: var(--z-nav);
+  position: relative;
+}
+.z-modal {
+  z-index: var(--z-modal);
+  position: relative;
+}
+.z-hoverable {
+  z-index: var(--z-hoverable);
+  position: relative;
+}
+
+/*============================================
+  LAYOUT UTILITIES
+  ============================================*/
+.display-none {
+  display: none;
+}
+.display-block {
+  display: block;
+}
+.display-inline {
+  display: inline;
+}
+.display-inline-block {
+  display: inline-block;
+}
+.display-flex,
+.display-flex-column,
+.display-flex-center {
+  display: flex;
+}
+.display-flex-column {
+  flex-direction: column;
+}
+.display-flex-center {
+  justify-content: space-evenly;
+  align-items: center;
+}
+.flex-child-grow {
+  flex: 1;
+}
+.flex-child-center {
+  align-self: center;
+}
+.display-grid,
+.display-grid-3-column,
+.display-grid-full {
+  display: grid;
+}
+.display-grid-3-column {
+  grid-template-columns: 1fr 3fr 1fr;
+}
+.display-grid-full {
+  grid-column: 1 / -1;
+}
+
+/*============================================
+  POSITION UTILITIES
+  ============================================*/
+.position-static {
+  position: static;
+}
+.position-relative {
+  position: relative;
+}
+.position-absolute {
+  position: absolute;
+}
+.position-fixed {
+  position: fixed;
+}
+.position-sticky {
+  position: sticky;
+}
+
+/*============================================
+  OFFSET UTILITIES
+  ============================================*/
+.top-0 {
+  top: 0;
+}
+.top-25 {
+  top: var(--percent-25);
+}
+.top-50 {
+  top: var(--percent-50);
+}
+.top-75 {
+  top: var(--percent-75);
+}
+.top-100 {
+  top: var(--percent-100);
+}
+.left-0 {
+  left: 0;
+}
+.left-25 {
+  left: var(--percent-25);
+}
+.left-50 {
+  left: var(--percent-50);
+}
+.left-75 {
+  left: var(--percent-75);
+}
+.left-100 {
+  left: var(--percent-100);
+}
+.right-0 {
+  right: 0;
+}
+.right-25 {
+  right: var(--percent-25);
+}
+.right-50 {
+  right: var(--percent-50);
+}
+.right-75 {
+  right: var(--percent-75);
+}
+.right-100 {
+  right: var(--percent-100);
+}
+.bottom-0 {
+  bottom: 0;
+}
+.bottom-25 {
+  bottom: var(--percent-25);
+}
+.bottom-50 {
+  bottom: var(--percent-50);
+}
+.bottom-75 {
+  bottom: var(--percent-75);
+}
+.bottom-100 {
+  bottom: var(--percent-100);
+}
+
+/*============================================
+  SVG-ICON STYLES
+  ============================================*/
+.icon {
+  width: var(--large);
+  height: var(--large);
+  padding: 0;
+  border: none;
+  background-color: transparent;
+  transition: var(--transition-fast);
+}
+svg {
+  fill: var(--color-text-primary);
+  transition: var(--transition-fast);
+}
+.icon.expanded {
+  transform: rotate(90deg);
+}
+svg:hover {
+  fill: var(--color-accent);
+}
+
+/*============================================
+  BUTTON UTILITIES
+  ============================================*/
+.btn,
+.btn-color,
+.btn-danger {
+  padding: var(--medium);
+  border: var(--border-width) solid var(--color-gray);
+  border-radius: var(--medium);
+  background-color: transparent;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  font-size: var(--medium);
+}
+.btn-color {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+  transition: none;
+}
+.btn-danger {
+  border-color: var(--color-danger);
+  color: var(--color-danger);
+  transition: none;
+}
+.btn:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+/*============================================
+  INPUT UTILITIES
+  - Note: all inputs have placeholders
+  ============================================*/
+.input,
+.input-center,
+.input-stretch {
+  min-width: 0;
+  padding: var(--small) var(--medium);
+  border: var(--border-width) solid var(--color-gray);
+  border-radius: var(--medium);
+  background-color: transparent;
+  transition: var(--transition-fast);
+  outline: none;
+  &::placeholder {
+    color: var(--color-placeholder);
+  }
+}
+.input-center {
+  text-align: center;
+}
+.input-stretch {
+  flex: 1;
+}
+.input:focus {
+  border-color: var(--color-accent);
+}
+/* Common placeholder styling */
+::placeholder {
+  color: var(--color-placeholder);
+  pointer-events: none;
+}
+
+/*============================================
+  LIST UTILITIES
+  ============================================*/
+.list {
+  list-style: none;
+  padding: 0;
+  overflow-y: auto;
+  scrollbar-color: transparent transparent;
+}
+.list:hover {
+  scrollbar-color: var(--color-placeholder) transparent;
+}
+.list-item {
+  padding: var(--small) var(--medium);
+}
+.link {
+  display: block;
+  transition: var(--transition-fast);
+  cursor: pointer;
+}
+.link:hover {
+  color: var(--color-accent);
+}
+
+/*============================================
+  MODAL UTILITIES
+  ============================================*/
+.modal {
+  position: fixed;
+  top: var(--percent-50);
+  left: var(--percent-50);
+  transform: translate(-50%, -50%);
+  z-index: var(--z-modal);
+  padding: var(--large);
+  border: var(--border-width) solid var(--color-gray);
+  border-radius: var(--medium);
+  background-color: var(--color-bg-primary);
+}
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: var(--percent-100);
+  height: var(--percent-100);
+  z-index: var(--z-overlay);
+  background-color: var(--color-black);
+  opacity: var(--percent-75);
+}
+
+/*============================================
+  EXPANDABLE UTILITIES
+  - Dropdowns, tooltips, accordions
+  - Expandable = shifts content, Floatable = overlays content
+  . .revealed = click-based, .hover-trigger = hover-based
+  ============================================*/
+.expandable,
+.floatable {
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: var(--transition-fast);
+}
+.floatable {
+  position: absolute;
+  z-index: var(--z-hoverable);
+  background-color: var(--color-bg-primary);
+}
+.expandable.revealed,
+.floatable.revealed {
+  opacity: 1;
+  max-height: var(--percent-100);
+}
+/* .expandable and .floatable must be child of .hover-trigger */
+.hover-trigger:hover .expandable,
+.hover-trigger:hover .floatable {
+  opacity: 1;
+  max-height: var(--percent-100);
+}
+
+/*============================================
+  CONTAINER: A basic building block component in sparse
+  ============================================*/
+.container {
+  margin: var(--medium);
+  border: var(--border-width) solid var(--color-gray);
+  border-radius: var(--medium);
+  background-color: transparent;
+}
+
+/*============================================
+  CARD: A single item of content
+  - Text, image, title, etc. 
+  ============================================*/
+.card,
+.card-link {
+  padding: var(--small);
+  background-color: transparent;
+}
+.card-link {
+  cursor: pointer;
+  border: var(--border-width) solid var(--color-gray);
+  border-radius: var(--medium);
+  transition: var(--transition-fast);
+}
+.card-link:hover {
+  border-color: var(--color-accent);
+}
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: var(--small);
+  transition: var(--transition-fast);
+}
+.card-header:hover {
+  color: var(--color-accent);
+}
+.card-description {
+  color: var(--color-gray);
+}
