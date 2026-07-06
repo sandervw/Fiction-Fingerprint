@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "scripts": {
     "build": "evidence build",
-    "postbuild": "node scripts/cdn-wasm.js",
+    "postbuild": "node scripts/cdn-wasm.js && node scripts/copy-404.js",
     "build:strict": "evidence build:strict",
     "dev": "evidence dev --open /",
     "test": "evidence build",

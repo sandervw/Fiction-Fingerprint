@@ -76,3 +76,7 @@ order by dm.display_name
     </AccordionItem>
 </Accordion>
 
+---
+
+Built with dbt, DuckDB, and Evidence — [source on GitHub](https://github.com/sandervw/Fiction-Fingerprint).
+
