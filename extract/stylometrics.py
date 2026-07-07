@@ -199,13 +199,17 @@ def contraction_rate(doc: Doc) -> dict[str, float]:
 
 def dialogue_narration_ratio(doc: Doc) -> dict[str, float]:
     """Metric 12: fraction of words inside double quotes. Sweep tokens flipping
-    an "inside quote" switch; words while on are dialogue."""
+    an "inside quote" switch; words while on are dialogue. The switch resets at
+    paragraph breaks, so an unbalanced quote bleeds one paragraph at most."""
     total = 0
     dialogue = 0
     inside_quote = False
     for token in doc:
         text = token.text
-        if text in OPEN_QUOTES:
+        if token.is_space:
+            if "\n" in text:
+                inside_quote = False
+        elif text in OPEN_QUOTES:
             inside_quote = True
         elif text in CLOSE_QUOTES:
             inside_quote = False

@@ -79,6 +79,80 @@ order by abs(zscore) desc
     sort=false
 />
 
+## Sentence Type Mix
+
+Share of simple, compound, and complex sentences in this work.
+
+```sql sentence_types
+select
+    series_label as sentence_type,
+    value as proportion
+from warehouse.mart_style_long
+where work_id = '${params.work}'
+    and concept_name = 'sentence_type_mix'
+order by proportion desc
+```
+
+<BarChart
+    data={sentence_types}
+    x=sentence_type
+    y=proportion
+    swapXY=true
+    yFmt=pct1
+    sort=false
+/>
+
+## Punctuation
+
+How this work's punctuation rates sit against the whole corpus (z-scores).
+
+```sql punctuation
+select
+    series_label as mark,
+    zscore
+from warehouse.mart_style_long
+where work_id = '${params.work}'
+    and concept_name = 'punctuation_frequency'
+order by zscore desc
+```
+
+<BarChart
+    data={punctuation}
+    x=mark
+    y=zscore
+    swapXY=true
+    yFmt=num2
+    sort=false
+/>
+
+## Function-word Loves/Hates
+
+The work's 12 most unusual function-word rates vs the whole corpus (z-scores).
+
+```sql function_words
+select word, zscore
+from (
+    select
+        series_label as word,
+        zscore
+    from warehouse.mart_style_long
+    where work_id = '${params.work}'
+        and concept_name = 'function_word_frequency'
+    order by abs(zscore) desc
+    limit 12
+)
+order by abs(zscore) desc
+```
+
+<BarChart
+    data={function_words}
+    x=word
+    y=zscore
+    swapXY=true
+    yFmt=num2
+    sort=false
+/>
+
 ```sql metric_defs
 select
     dm.display_name,
