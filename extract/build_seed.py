@@ -23,7 +23,6 @@ AUTHOR_META: dict[str, tuple[str, str, str, bool]] = {
     "Clark-Ashton-Smith": ("Clark Ashton Smith", "weird fiction", "1930s", False),
     "Diana-Wynne-Jones": ("Diana Wynne Jones", "children's fantasy", "1986", False),
     "E-R-Eddison": ("E. R. Eddison", "heroic high fantasy", "1922", False),
-    "George-R-R-Martin": ("George R. R. Martin", "epic fantasy (A Song of Ice and Fire)", "1996-2011", False),
     "Jack-Vance": ("Jack Vance", "science fantasy (Dying Earth)", "1950s-80s", False),
     "J-R-R-Tolkien": ("J. R. R. Tolkien", "high fantasy", "1937-1955", False),
     "Karl-Edward-Wagner": ("Karl Edward Wagner", "sword & sorcery / dark fantasy", "1970s-80s", False),
