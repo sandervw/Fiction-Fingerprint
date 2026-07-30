@@ -1,6 +1,6 @@
 # Project: prose-fingerprint
 
-A dbt Core + DuckDB project that models stylometric "fingerprints": 15 style metrics measured across **135 works** (10 authors, ~3.66M words), normalized to z-scores, and served as an Evidence.dev dashboard comparing the author's own prose against nine studied authors (Wagner, Peake, Eddison, Vance, Clark Ashton Smith, Tolkien, Salvatore, Howard, Hodgson).
+A dbt Core + DuckDB project that models stylometric "fingerprints": 15 style metrics measured across **137 works** (11 authors, ~4.01M words), normalized to z-scores, and served as an Evidence.dev dashboard comparing the author's own prose against ten studied authors (Wagner, Peake, Eddison, Vance, Clark Ashton Smith, Diana Wynne Jones, Tolkien, Salvatore, Howard, Hodgson).
 
 Built on DuckDB; designed to port to Microsoft Fabric with only a `profiles.yml` change.
 
@@ -50,11 +50,11 @@ Modules under `extract/`:
 
 `seed_authors.csv` (`work_id`, `title`, `author`, `tradition`, `era`, `is_self`, `path`) doubles as both the extractor's manifest and a dbt seed, so the two halves cannot drift. `prose_type` is derived in `dim_work` from `word_count`.
 
-**Corpus:** 135 works, 10 authors, ~3.66M words.
+**Corpus:** 137 works, 11 authors, ~4.01M words.
 
 | Author               | Works | Tradition                         |
 | -------------------- | ----- | --------------------------------- |
-| Sander VanWilligen   | 26    | speculative fiction (`is_self`)   |
+| Sander VanWilligen   | 27    | speculative fiction (`is_self`)   |
 | Clark Ashton Smith   | 60    | weird fiction                     |
 | Karl Edward Wagner   | 12    | sword & sorcery / dark fantasy    |
 | Robert E. Howard     | 11    | sword & sorcery (Conan)           |
@@ -63,6 +63,7 @@ Modules under `extract/`:
 | J. R. R. Tolkien     | 4     | high fantasy                      |
 | Jack Vance           | 4     | science fantasy (Dying Earth)     |
 | Mervyn Peake         | 2     | gothic fantasy                    |
+| Diana Wynne Jones    | 1     | children's fantasy                |
 | E. R. Eddison        | 1     | heroic high fantasy               |
 
 ---
@@ -95,7 +96,7 @@ Metric 15 compares two authors, so its grain and implementation differ from the 
 
 **Python emits a vocabulary, not a value.** `vocab.py` returns a work's content-word lemmas with their per-work counts (open-class POS, stopwords dropped, lemmatized and lowercased; proper nouns excluded so character names do not swamp the signal). These land as `raw.raw_vocab` rows, one per `(work_id, term, term_count)`. The count is unused by Jaccard (presence-based) but is kept for later frequency work.
 
-**dbt computes the overlap** in `int_vocab_jaccard.sql`: pool each author's works into one distinct-term vocabulary, then measure every other author against you. Intersection is a join on `term`; union is `|A| + |B| - |A∩B|`. Pure joins and counts, so it ports to Fabric. A LEFT join keeps a zero-overlap author at `jaccard = 0` rather than dropping it. Output: 9 rows, one per other author.
+**dbt computes the overlap** in `int_vocab_jaccard.sql`: pool each author's works into one distinct-term vocabulary, then measure every other author against you. Intersection is a join on `term`; union is `|A| + |B| - |A∩B|`. Pure joins and counts, so it ports to Fabric. A LEFT join keeps a zero-overlap author at `jaccard = 0` rather than dropping it. Output: 10 rows, one per other author.
 
 ---
 
@@ -107,13 +108,13 @@ The primary fact is **tall and narrow** (one row per work per metric series), so
 
 | Table                    | Grain          | Rows  | Key columns                                                                                 |
 | ------------------------ | -------------- | ----- | ------------------------------------------------------------------------------------------- |
-| `dim_author`             | author         | 10    | `author_key`, `name`, `tradition`, `era`, `is_self`                                         |
-| `dim_work`               | work           | 135   | `work_key`, `author_key`, `work_id`, `title`, `word_count`, `prose_type`                    |
+| `dim_author`             | author         | 11    | `author_key`, `name`, `tradition`, `era`, `is_self`                                         |
+| `dim_work`               | work           | 137   | `work_key`, `author_key`, `work_id`, `title`, `word_count`, `prose_type`                    |
 | `dim_metric`             | metric concept | 15    | `metric_key`, `metric_name`, `display_name`, `category`, `additivity`, ...                  |
-| `fact_style_measurement` | work × series  | 8,505 | `measurement_key`, `work_key`, `author_key`, `metric_key`, `metric_name`, `value`, `zscore` |
-| `fact_vocab_overlap`     | author pair    | 9     | `overlap_key`, `author_key_a` (you), `author_key_b`, `shared_terms`, `jaccard`              |
-| `mart_style_long`        | work × series  | 8,505 | OBT: the fact denormalized against all dims, with `series_label`                            |
-| `mart_work_fingerprint`  | work           | 135   | wide pivot: one z-score column per series (63)                                              |
+| `fact_style_measurement` | work × series  | 8,631 | `measurement_key`, `work_key`, `author_key`, `metric_key`, `metric_name`, `value`, `zscore` |
+| `fact_vocab_overlap`     | author pair    | 10    | `overlap_key`, `author_key_a` (you), `author_key_b`, `shared_terms`, `jaccard`              |
+| `mart_style_long`        | work × series  | 8,631 | OBT: the fact denormalized against all dims, with `series_label`                            |
+| `mart_work_fingerprint`  | work           | 137   | wide pivot: one z-score column per series (63)                                              |
 
 - `is_self = true` on your author row makes "you vs everyone" a filter, not special-casing.
 - `fact_style_measurement` carries `author_key` directly (off `dim_work`) so it slices by author without an extra hop. `metric_key` is concept-grain, so a multi-value concept's child series share one key; `metric_name` holds the child series name.
@@ -150,7 +151,7 @@ prose_fingerprint/
 ├── packages.yml                # dbt_utils
 ├── profiles.yml                # duckdb target active; fabric stub commented
 ├── seeds/
-│   ├── seed_authors.csv        # 135 works + author metadata (also the manifest)
+│   ├── seed_authors.csv        # 137 works + author metadata (also the manifest)
 │   └── seed_metrics.csv        # 15 metric definitions → dim_metric
 ├── models/
 │   ├── staging/                # views

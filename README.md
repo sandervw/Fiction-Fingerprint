@@ -1,7 +1,7 @@
 # Fiction-Fingerprint
 
 Every writer has a fingerprint: habits of sentence length, punctuation, and word
-choice they reach for without thinking. This project measures mine against nine
+choice they reach for without thinking. This project measures mine against ten
 fantasy and weird-fiction authors I admire, and asks how close my prose actually
 sits to theirs.
 
@@ -10,8 +10,8 @@ vehicle; the point is a clean, tested, dimensional warehouse served as a dashboa
 
 ## What it does
 
-1. A **Python + spaCy extractor** reads 135 works (mine plus nine studied authors,
-   ~3.66M words) and emits 15 style metrics per work as tidy rows.
+1. A **Python + spaCy extractor** reads 137 works (mine plus ten studied authors,
+   ~4.01M words) and emits 15 style metrics per work as tidy rows.
 2. **dbt** shapes those rows into a star schema, normalizes every metric to a
    z-score (how many standard deviations a work sits from the corpus average), and
    computes vocabulary overlap between me and each author.
