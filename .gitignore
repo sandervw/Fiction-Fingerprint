@@ -8,3 +8,7 @@ corpus/
 
 # Exception: committed so Cloudflare Pages can build the Evidence site
 !prose_fingerprint/warehouse.duckdb
+
+
+# --- Hook state (runtime counters, not source) ---
+.claude/hooks/.state/

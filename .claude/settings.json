@@ -1,0 +1,32 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -NoProfile -ExecutionPolicy Bypass -File \"C:\\Users\\Sander\\OneDrive\\Documents\\Github\\Fiction-Fingerprint\\.claude\\hooks\\md-edit-check.ps1\""
+          },
+          {
+            "type": "command",
+            "command": "powershell -NoProfile -ExecutionPolicy Bypass -File \"C:\\Users\\Sander\\OneDrive\\Documents\\Github\\Fiction-Fingerprint\\.claude\\hooks\\code-edit-check.ps1\""
+          }
+        ]
+      },
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -NoProfile -ExecutionPolicy Bypass -File \"C:\\Users\\Sander\\OneDrive\\Documents\\Github\\Fiction-Fingerprint\\.claude\\hooks\\md-write-check.ps1\""
+          },
+          {
+            "type": "command",
+            "command": "powershell -NoProfile -ExecutionPolicy Bypass -File \"C:\\Users\\Sander\\OneDrive\\Documents\\Github\\Fiction-Fingerprint\\.claude\\hooks\\code-write-check.ps1\""
+          }
+        ]
+      }
+    ]
+  }
+}
