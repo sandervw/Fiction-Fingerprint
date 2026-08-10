@@ -7,7 +7,7 @@ prose_fingerprint:
       # current working dir (not the project), so running dbt from elsewhere
       # silently makes a second DB. Anchoring it kills that foot-gun. The
       # .duckdb file is gitignored; on another machine, override via env_var.
-      path: C:/Users/Sander/OneDrive/Documents/Github/Fiction-Fingerprint/prose_fingerprint/warehouse.duckdb
+      path: C:/Users/Sander/Documents/Github/Fiction-Fingerprint/prose_fingerprint/warehouse.duckdb
       threads: 4
     # fabric:                    # add later for the portability swap — no model changes
     #   type: fabric
